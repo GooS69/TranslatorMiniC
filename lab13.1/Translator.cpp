@@ -1,10 +1,10 @@
 #include "Translator.h"
 
-TranslationExeption::TranslationExeption(std::string message) {
+TranslationException::TranslationException(std::string message) {
 	_message = message;
 }
 
-const char* TranslationExeption::what()const noexcept {
+const char* TranslationException::what()const noexcept {
 	return _message.c_str();
 }
 
@@ -30,4 +30,14 @@ void Translator::generateAtom(std::shared_ptr<Atom> atom) {
 
 std::shared_ptr<LabelOperand> Translator::newLabel() {
 	return std::make_shared<LabelOperand>(LabelOperand(_label_counter++));
+}
+
+
+void Translator::syntaxError(const std::string& message) {
+	throw TranslationException(message);
+}
+
+
+void Translator::lexicalError(const std::string& message) {
+	throw TranslationException(message);
 }

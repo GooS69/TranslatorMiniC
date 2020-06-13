@@ -5,11 +5,11 @@
 #include "Scanner.h"
 
 
-class TranslationExeption :public std::exception {
+class TranslationException :public std::exception {
 protected:
 	std::string _message;
 public:
-	TranslationExeption(std::string message);
+	TranslationException(std::string message);
 	const char* what()const noexcept override;
 };
 

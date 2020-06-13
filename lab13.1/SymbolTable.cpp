@@ -2,14 +2,11 @@
 
 SymbolTable::SymbolTable(){
 	_temp_counter = 0; 
+	_records = std::vector<TableRecord>{};
 }
 
 bool SymbolTable::TableRecord::operator == (const TableRecord& other)const {
 	return _name == other._name;
-}
-
-SymbolTable::SymbolTable() {
-	_records = std::vector<TableRecord>{};
 }
 
 SymbolTable::TableRecord::TableRecord(const std::string& name) {
