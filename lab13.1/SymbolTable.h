@@ -14,8 +14,10 @@ class SymbolTable {
 
 protected:
 	std::vector<TableRecord> _records;
+	int _temp_counter;
 public:
 	SymbolTable();
 	const TableRecord& operator [](const int index) const;
 	std::shared_ptr<MemoryOperand> add(const std::string& name);
+	std::shared_ptr<MemoryOperand> alloc();
 };

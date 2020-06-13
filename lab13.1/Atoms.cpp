@@ -65,7 +65,7 @@ UnaryOpAtom::UnaryOpAtom(const std::string& name, std::shared_ptr<RValue> operan
 
 
 std::string UnaryOpAtom::toString() const {
-	return "(" + _name + ", " + _operand->toString() + ",, " + _result->toString() = ")";
+	return "(" + _name + ", " + _operand->toString() + ",, " + _result->toString() + ")";
 }
 
 

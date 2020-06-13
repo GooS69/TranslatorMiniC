@@ -1,21 +1,25 @@
 ﻿#include <iostream>
+#include <fstream>
 #include "StringTable.h"
 #include "SymbolTable.h"
+#include "Translator.h"
 
 int main()
 {
-	//StringTable T = StringTable();
-	//T.add("dfg");
-	//T.add("dfg");
-	//T.add("dfgs");
-	//T.add("dfgdasvg");
-	//std::cout << T[0]<<" "<<T[2];
 
+
+
+
+
+
+
+	std::ifstream ifile("myprog.txt");
+	Translator T(ifile);
 	SymbolTable S = SymbolTable();
-	S.add("dfhyil");
-	S.add("posml");
-	S.add("posml");
-	S.add("sdgt");
-
+	auto R = S.add("in memory");
+	std::shared_ptr<BinaryOpAtom> A = std::make_shared<BinaryOpAtom>(BinaryOpAtom("ADDDDD",R ,R,R));
+	//std::cout << A.toString();
+	T.generateAtom(A);
+	T.printAtoms(std::cout);
 }
 
