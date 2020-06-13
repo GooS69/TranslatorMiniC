@@ -49,8 +49,8 @@ private:
 
 public:
 	Scanner(std::istream& inputStream);
-
 	Token getNextToken();
+
 };
 
 Scanner& operator>>(Scanner& scanner, Token& token);

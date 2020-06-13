@@ -16,6 +16,11 @@ Translator::Translator(std::istream& is) :_scanner(Scanner(is)){
 }
 
 
+void Translator::getNextLexem() {
+	_currentLexem = _scanner.getNextToken();
+}
+
+
 void Translator::printAtoms(std::ostream& stream) {
 	for (int i = 0; i < _atoms.size(); i++) {
 		stream << _atoms[i]->toString() << std::endl;
@@ -40,4 +45,24 @@ void Translator::syntaxError(const std::string& message) {
 
 void Translator::lexicalError(const std::string& message) {
 	throw TranslationException(message);
+}
+
+
+std::shared_ptr<RValue> Translator::E1() {
+	getNextLexem();
+	if (_currentLexem.type() == LexemType::lpar) {
+		auto q = E();
+		if (!q) {
+			syntaxError("sdgersdgbedb");
+		}
+		getNextLexem();
+		if (_currentLexem.type() != LexemType::rpar) {
+			syntaxError("sdgers");
+		}
+		return q;
+	}
+
+
+
+
 }

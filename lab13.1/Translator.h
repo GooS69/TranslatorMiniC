@@ -25,9 +25,15 @@ protected:
 	int _label_counter;
 public:
 	Translator(std::istream& is);
+	void getNextLexem();
 	void printAtoms(std::ostream& stream);
 	void generateAtom(std::shared_ptr<Atom> atom);
 	std::shared_ptr<LabelOperand> newLabel();
 	void syntaxError(const std::string& message);
 	void lexicalError(const std::string& message);
+
+	std::shared_ptr<RValue> E1();
+
+
+
 };
