@@ -23,8 +23,25 @@ protected:
 	Token _currentLexem;
 	
 	int _label_counter;
+	bool _epsilonFlag = false;
+
+	std::shared_ptr<RValue> E();
+	std::shared_ptr<RValue> E7();
+	std::shared_ptr<RValue> E7_(std::shared_ptr<RValue> p);
+	std::shared_ptr<RValue> E6();
+	std::shared_ptr<RValue> E6_(std::shared_ptr<RValue> p);
+	std::shared_ptr<RValue> E5();
+	std::shared_ptr<RValue> E5_(std::shared_ptr<RValue> p);
+	std::shared_ptr<RValue> E4();
+	std::shared_ptr<RValue> E4_(std::shared_ptr<RValue> p);
+	std::shared_ptr<RValue> E3();
+	std::shared_ptr<RValue> E3_(std::shared_ptr<RValue> p);
+	std::shared_ptr<RValue> E2();
+	std::shared_ptr<RValue> E1();
+	std::shared_ptr<RValue> E1_(std::string p);
 public:
 	Translator(std::istream& is);
+	void startTranslate();
 	void getNextLexem();
 	void printAtoms(std::ostream& stream);
 	void generateAtom(std::shared_ptr<Atom> atom);
@@ -32,8 +49,8 @@ public:
 	void syntaxError(const std::string& message);
 	void lexicalError(const std::string& message);
 
-	std::shared_ptr<RValue> E1();
 
+	
 
 
 };
