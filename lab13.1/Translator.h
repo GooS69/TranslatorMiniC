@@ -24,6 +24,7 @@ protected:
 	
 	int _label_counter;
 	bool _epsilonFlag = false;
+	std::vector<Token> _tokens;
 
 	std::shared_ptr<RValue> E();
 	std::shared_ptr<RValue> E7();
@@ -48,9 +49,4 @@ public:
 	std::shared_ptr<LabelOperand> newLabel();
 	void syntaxError(const std::string& message);
 	void lexicalError(const std::string& message);
-
-
-	
-
-
 };

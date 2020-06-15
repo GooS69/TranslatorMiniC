@@ -168,6 +168,9 @@
     <ClInclude Include="Token.h" />
     <ClInclude Include="Translator.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="myprog.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
