@@ -1,17 +1,17 @@
 ﻿#include <iostream>
-#include <fstream>
+#include <sstream>
 #include "StringTable.h"
 #include "SymbolTable.h"
 #include "Translator.h"
 
 int main()
 {
-	std::ifstream ifile("myprog.txt");
-	Translator t = Translator(ifile);
+	std::istringstream s_in("2&&2");
+	Translator t = Translator(s_in);
 	try {
-		t.syntaxError("There is no second |");
+		t.startTranslate();
 	}
-	catch(TranslationException exception){
+	catch (TranslationException exception) {
 		std::cout << exception.what();
 	}
 }
