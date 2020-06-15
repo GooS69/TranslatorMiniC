@@ -604,7 +604,7 @@ TEST(grammar_tests, inc_a_left_without_id) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected id");
+		EXPECT_EQ(s_out2.str(), "expected id at E1");
 	}
 }
 
@@ -620,7 +620,7 @@ TEST(grammar_tests, inc_int_left) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected id");
+		EXPECT_EQ(s_out2.str(), "expected id at E1");
 	}
 }
 
@@ -636,7 +636,7 @@ TEST(grammar_tests, inc_int_right) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected id");
+		EXPECT_EQ(s_out2.str(), "expected operation(there are still tokens)");
 	}
 }
 
@@ -668,7 +668,7 @@ TEST(grammar_tests, NOT_a_without_exp) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -748,7 +748,7 @@ TEST(grammar_tests, MUL_a_without_exp_right) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -764,7 +764,7 @@ TEST(grammar_tests, MUL_a_without_exp_left) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -859,7 +859,7 @@ TEST(grammar_tests, SUB_a_without_exp_left) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -875,7 +875,7 @@ TEST(grammar_tests, SUB_a_without_exp_right) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 TEST(grammar_tests, ADD_a_a) {
@@ -970,7 +970,7 @@ TEST(grammar_tests, ADD_a_witout_exp_right) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -986,7 +986,7 @@ TEST(grammar_tests, ADD_a_witout_exp_left) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -1066,7 +1066,7 @@ TEST(grammar_tests, EQ_a_without_exp_left) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -1082,7 +1082,7 @@ TEST(grammar_tests, EQ_a_without_exp_right) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -1098,7 +1098,7 @@ TEST(grammar_tests, EQ_int_without_exp_left) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -1114,7 +1114,7 @@ TEST(grammar_tests, EQ_int_without_exp_right) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -1194,7 +1194,7 @@ TEST(grammar_tests, NE_a_without_exp_left) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -1210,7 +1210,7 @@ TEST(grammar_tests, NE_a_without_exp_right) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -1226,7 +1226,7 @@ TEST(grammar_tests, NE_int_without_exp_left) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -1242,7 +1242,7 @@ TEST(grammar_tests, NE_int_without_exp_right) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -1322,7 +1322,7 @@ TEST(grammar_tests, GT_a_without_exp_left) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -1338,7 +1338,7 @@ TEST(grammar_tests, GT_a_without_exp_right) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -1354,7 +1354,7 @@ TEST(grammar_tests, GT_int_without_exp_left) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -1370,7 +1370,7 @@ TEST(grammar_tests, GT_int_without_exp_right) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -1450,7 +1450,7 @@ TEST(grammar_tests, LT_a_without_exp_left) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -1466,7 +1466,7 @@ TEST(grammar_tests, LT_a_without_exp_right) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -1482,7 +1482,7 @@ TEST(grammar_tests, LT_int_without_exp_left) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -1498,7 +1498,7 @@ TEST(grammar_tests, LT_int_without_exp_right) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -1578,7 +1578,7 @@ TEST(grammar_tests, LE_a_without_exp_left) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -1594,7 +1594,7 @@ TEST(grammar_tests, LE_a_without_exp_right) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -1610,7 +1610,7 @@ TEST(grammar_tests, LE_int_without_exp_left) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -1626,7 +1626,7 @@ TEST(grammar_tests, LE_int_without_exp_right) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -1706,7 +1706,7 @@ TEST(grammar_tests, AND_a_without_exp_left) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -1722,7 +1722,7 @@ TEST(grammar_tests, AND_a_without_exp_right) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -1738,7 +1738,7 @@ TEST(grammar_tests, AND_int_without_exp_left) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -1754,7 +1754,7 @@ TEST(grammar_tests, AND_int_without_exp_right) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -1834,7 +1834,7 @@ TEST(grammar_tests, OR_a_without_exp_left) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -1850,7 +1850,7 @@ TEST(grammar_tests, OR_a_without_exp_right) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -1866,7 +1866,7 @@ TEST(grammar_tests, OR_int_without_exp_left) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
@@ -1882,7 +1882,7 @@ TEST(grammar_tests, OR_int_without_exp_right) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id");
+		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
 	}
 }
 
