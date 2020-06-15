@@ -1,3 +1,6 @@
+#include <fstream>
+#include <sstream>
+#include <iostream>
 #include "pch.h"
 #include "..//lab13.1/StringTable.h"
 #include "..//lab13.1/StringTable.cpp"
@@ -5,6 +8,13 @@
 #include "..//lab13.1/SymbolTable.cpp"
 #include "..//lab13.1/Atoms.h"
 #include "..//lab13.1/Atoms.cpp"
+#include "..//lab13.1/Translator.h"
+#include "..//lab13.1/Translator.cpp"
+#include "..//lab13.1/Scanner.cpp"
+#include "..//lab13.1/Lexemtostring.cpp"
+#include "..//lab13.1/Token.cpp"
+#include "..//lab13.1/Scanner.h"
+#include "..//lab13.1/Token.h"
 
 TEST(add_stringtab, one_elem) {
 	StringTable table = StringTable();
@@ -106,7 +116,7 @@ TEST(add_symboltab, one_elem) {
 	SymbolTable table = SymbolTable();
 	std::string str = "a";
 	EXPECT_EQ(table.add(str)->toString(), "0");
-	EXPECT_EQ(table[0], str);
+	EXPECT_EQ(table[0]._name, "a");
 }
 
 TEST(add_symboltab, two_elem) {
@@ -115,8 +125,8 @@ TEST(add_symboltab, two_elem) {
 	std::string str2 = "b";
 	EXPECT_EQ(table.add(str)->toString(), "0");
 	EXPECT_EQ(table.add(str2)->toString(), "1");
-	EXPECT_EQ(table[0], str);
-	EXPECT_EQ(table[1], str2);
+	EXPECT_EQ(table[0]._name, "a");
+	EXPECT_EQ(table[1]._name, "b");
 }
 
 TEST(add_symboltab, five_elem) {
@@ -351,4 +361,177 @@ TEST(out_atom, OUT) {
 TEST(label_atom, LBL) {
 	std::shared_ptr<LabelOperand> label = std::make_shared<LabelOperand>(LabelOperand(1));
 	EXPECT_EQ(LabelAtom(label).toString(), "(LBL,,, 1)");
+}
+
+TEST(generate_atoms, bin_atom) {
+	std::ifstream ifile("myprog.txt");
+	Translator t = Translator(ifile);
+	SymbolTable table = SymbolTable();
+	std::ostringstream ss;
+	auto a = table.add("a");
+	auto b = table.add("b");
+	auto res = table.add("result");
+	t.generateAtom(std::make_shared<BinaryOpAtom>(BinaryOpAtom("ADD", a, b, res)));
+	t.printAtoms(ss);
+	EXPECT_EQ(ss.str(), "(ADD, 0, 1, 2)\n");
+}
+
+TEST(generate_atoms, unary_atom) {
+	std::ifstream ifile("myprog.txt");
+	Translator t = Translator(ifile);
+	SymbolTable table = SymbolTable();
+	std::ostringstream ss;
+	auto a = table.add("a");
+	auto res = table.add("result");
+	t.generateAtom(std::make_shared<UnaryOpAtom>(UnaryOpAtom("NEG", a, res)));
+	t.printAtoms(ss);
+	EXPECT_EQ(ss.str(), "(NEG, 0,, 1)\n");
+}
+
+TEST(generate_atoms, lbl_atom) {
+	std::ifstream ifile("myprog.txt");
+	Translator t = Translator(ifile);
+	std::ostringstream ss;
+	std::shared_ptr<LabelOperand> label = std::make_shared<LabelOperand>(LabelOperand(1));
+	t.generateAtom(std::make_shared<LabelAtom>(LabelAtom(label)));
+	t.printAtoms(ss);
+	EXPECT_EQ(ss.str(), "(LBL,,, 1)\n");
+}
+
+TEST(generate_atoms, condjump_atom) {
+	std::ifstream ifile("myprog.txt");
+	Translator t = Translator(ifile);
+	SymbolTable table = SymbolTable();
+	std::ostringstream ss;
+	auto a = table.add("a");
+	auto b = table.add("b");
+	std::shared_ptr<LabelOperand> label = std::make_shared<LabelOperand>(LabelOperand(1));
+	t.generateAtom(std::make_shared<ConditionalJumpAtom>(ConditionalJumpAtom("NE", a, b, label)));
+	t.printAtoms(ss);
+	EXPECT_EQ(ss.str(), "(NE, 0, 1, 1)\n");
+}
+
+TEST(generate_atoms, in_atom) {
+	std::ifstream ifile("myprog.txt");
+	Translator t = Translator(ifile);
+	SymbolTable table = SymbolTable();
+	std::ostringstream ss;
+	auto input = table.add("input");
+	t.generateAtom(std::make_shared<InAtom>(InAtom(input)));
+	t.printAtoms(ss);
+	EXPECT_EQ(ss.str(), "(IN,,, 0)\n");
+}
+
+TEST(generate_atoms, out_atom) {
+	std::ifstream ifile("myprog.txt");
+	Translator t = Translator(ifile);
+	SymbolTable table = SymbolTable();
+	std::ostringstream ss;
+	auto res = table.add("result");
+	t.generateAtom(std::make_shared<OutAtom>(OutAtom(res)));
+	t.printAtoms(ss);
+	EXPECT_EQ(ss.str(), "(OUT,,, 0)\n");
+}
+
+TEST(print_atoms, one_atom) {
+	std::ifstream ifile("myprog.txt");
+	Translator t = Translator(ifile);
+	SymbolTable table = SymbolTable();
+	std::ostringstream ss;
+	auto a = table.add("a");
+	auto b = table.add("b");
+	auto res = table.add("result");
+	t.generateAtom(std::make_shared<BinaryOpAtom>(BinaryOpAtom("MUL", a, b, res)));
+	t.printAtoms(ss);
+	EXPECT_EQ(ss.str(), "(MUL, 0, 1, 2)\n");
+}
+
+TEST(print_atoms, three_atoms) {
+	std::ifstream ifile("myprog.txt");
+	Translator t = Translator(ifile);
+	SymbolTable table = SymbolTable();
+	std::ostringstream ss;
+	auto a = table.add("a");
+	auto b = table.add("b");
+	auto res = table.add("result");
+	auto res2 = table.add("result2");
+	auto res3 = table.add("result3");
+	t.generateAtom(std::make_shared<BinaryOpAtom>(BinaryOpAtom("MUL", a, b, res)));
+	t.generateAtom(std::make_shared<UnaryOpAtom>(UnaryOpAtom("NEG", res, res2)));
+	t.generateAtom(std::make_shared<BinaryOpAtom>(BinaryOpAtom("ADD", a, res2, res3)));
+	t.printAtoms(ss);
+	EXPECT_EQ(ss.str(), "(MUL, 0, 1, 2)\n(NEG, 2,, 3)\n(ADD, 0, 3, 4)\n");
+}
+
+TEST(alloc, only_alloc) {
+	SymbolTable table = SymbolTable();
+	auto t = table.alloc();
+	EXPECT_EQ(table[0]._name, "temp0");
+}
+
+TEST(alloc, alloc_after_symb) {
+	SymbolTable table = SymbolTable();
+	auto a = table.add("a");
+	auto t = table.alloc();
+	EXPECT_EQ(table[1]._name, "temp0");
+}
+
+TEST(alloc, two_alloc) {
+	SymbolTable table = SymbolTable();
+	auto t = table.alloc();
+	auto t1 = table.alloc();
+	EXPECT_EQ(table[0]._name, "temp0");
+	EXPECT_EQ(table[1]._name, "temp1");
+}
+
+TEST(alloc, alloc_after_symb_and_alloc) {
+	SymbolTable table = SymbolTable();
+	auto t = table.alloc();
+	auto a = table.add("a");
+	auto t1 = table.alloc();
+	EXPECT_EQ(table[2]._name, "temp1");
+}
+
+TEST(newlabel, one_label) {
+	std::ifstream ifile("myprog.txt");
+	Translator t = Translator(ifile);
+	auto l = t.newLabel();
+	EXPECT_EQ(l->toString(), "0");
+}
+
+TEST(newlabel, three_labels) {
+	std::ifstream ifile("myprog.txt");
+	Translator t = Translator(ifile);
+	auto l = t.newLabel();
+	auto l2 = t.newLabel();
+	auto l3 = t.newLabel();
+	EXPECT_EQ(l->toString(), "0");
+	EXPECT_EQ(l2->toString(), "1");
+	EXPECT_EQ(l3->toString(), "2");
+}
+
+TEST(syntax_error, syntax_error) {
+	std::ifstream ifile("myprog.txt");
+	Translator t = Translator(ifile);
+	std::ostringstream ss;
+	try {
+		t.syntaxError("unexpected statement: expected ||");
+	}
+	catch (TranslationException exception) {
+		ss << exception.what();
+		EXPECT_EQ(ss.str(), "unexpected statement: expected ||");
+	}
+}
+
+TEST(lexical_error, lexical_error) {
+	std::ifstream ifile("myprog.txt");
+	Translator t = Translator(ifile);
+	std::ostringstream ss;
+	try {
+		t.lexicalError("unknown symbol");
+	}
+	catch (TranslationException exception) {
+		ss << exception.what();
+		EXPECT_EQ(ss.str(), "unknown symbol");
+	}
 }

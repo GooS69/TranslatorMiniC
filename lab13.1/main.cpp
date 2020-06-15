@@ -7,11 +7,11 @@
 int main()
 {
 	std::ifstream ifile("myprog.txt");
-	Translator T(ifile);
+	Translator t = Translator(ifile);
 	try {
-		T.startTranslate();
+		t.syntaxError("There is no second |");
 	}
-	catch (TranslationException exception) {
+	catch(TranslationException exception){
 		std::cout << exception.what();
 	}
 }
