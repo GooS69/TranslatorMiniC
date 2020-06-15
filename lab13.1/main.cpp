@@ -8,8 +8,12 @@ int main()
 {
 	std::ifstream ifile("myprog.txt");
 	Translator t = Translator(ifile);
+	std::ofstream ofile("prog_atom.txt");
 	try {
-		t.syntaxError("There is no second |");
+		t.startTranslate();
+		t.printAtoms(ofile);
+		ofile << std::endl<<"Symbol Table"<<std::endl;
+		t.printSymbolTable(ofile);
 	}
 	catch(TranslationException exception){
 		std::cout << exception.what();

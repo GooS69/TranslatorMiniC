@@ -20,4 +20,5 @@ public:
 	const TableRecord& operator [](const int index) const;
 	std::shared_ptr<MemoryOperand> add(const std::string& name);
 	std::shared_ptr<MemoryOperand> alloc();
+	void print(std::ostream& stream);
 };

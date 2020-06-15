@@ -45,6 +45,7 @@ public:
 	void startTranslate();
 	void getNextLexem();
 	void printAtoms(std::ostream& stream);
+	void printSymbolTable(std::ostream& stream);
 	void generateAtom(std::shared_ptr<Atom> atom);
 	std::shared_ptr<LabelOperand> newLabel();
 	void syntaxError(const std::string& message);
