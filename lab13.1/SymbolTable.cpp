@@ -35,3 +35,10 @@ std::shared_ptr<MemoryOperand> SymbolTable::add(const std::string& name) {
 std::shared_ptr<MemoryOperand> SymbolTable::alloc() {
 	return this->add("temp" + std::to_string(_temp_counter++));
 }
+
+
+void SymbolTable::print(std::ostream& stream) {
+	for (int i = 0; i < _records.size();i++) {
+		stream << i << " " << _records[i]._name<<std::endl;
+	}
+}

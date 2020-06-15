@@ -18,7 +18,12 @@ Translator::Translator(std::istream& is) :_scanner(Scanner(is)){
 
 void Translator::startTranslate() {
 	E();
+	if (_currentLexem.type() != LexemType::eof) {
+		syntaxError("expected operation(there are still tokens)");
+	}
 	printAtoms(std::cout);
+	std::cout << std::endl << "Symbol table" << std::endl;
+	_symbolTable.print(std::cout);
 }
 
 
@@ -41,6 +46,11 @@ void Translator::printAtoms(std::ostream& stream) {
 	for (int i = 0; i < _atoms.size(); i++) {
 		stream << _atoms[i]->toString() << std::endl;
 	}
+}
+
+
+void Translator::printSymbolTable(std::ostream& stream) {
+	_symbolTable.print(stream);
 }
 
 
@@ -70,6 +80,7 @@ void Translator::lexicalError(const std::string& message) {
 
 
 std::shared_ptr<RValue> Translator::E() {								// Правило 1.1
+	//std::cout << "E";
 	auto q = E7();
 	if (!q) {
 		syntaxError("E7 at E return nullptr");
@@ -79,6 +90,7 @@ std::shared_ptr<RValue> Translator::E() {								// Правило 1.1
 
 
 std::shared_ptr<RValue> Translator::E7() {								// Правило 2.1
+	//std::cout << "E7";
 	auto q = E6();
 	if (!q) {
 		syntaxError("E6 at E7 return nullptr");
@@ -93,6 +105,7 @@ std::shared_ptr<RValue> Translator::E7() {								// Правило 2.1
 
 
 std::shared_ptr<RValue> Translator::E7_(std::shared_ptr<RValue> p) {
+	//std::cout << "E7_";
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::opor) {						// Правило 3.1
 		auto r = E6();
@@ -118,6 +131,7 @@ std::shared_ptr<RValue> Translator::E7_(std::shared_ptr<RValue> p) {
 
 
 std::shared_ptr<RValue> Translator::E6() {								// Правило 5.1
+	//std::cout << "E6";
 	auto q = E5();
 	if (!q) {
 		syntaxError("E5 at E6 return nullptr");
@@ -131,6 +145,7 @@ std::shared_ptr<RValue> Translator::E6() {								// Правило 5.1
 
 
 std::shared_ptr<RValue> Translator::E6_(std::shared_ptr<RValue> p) {
+	//std::cout << "E6_";
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::opand) {						// Правило 6.1
 		auto r = E5();
@@ -156,6 +171,7 @@ std::shared_ptr<RValue> Translator::E6_(std::shared_ptr<RValue> p) {
 
 
 std::shared_ptr<RValue> Translator::E5() {								// Правило 8.1
+	//std::cout << "E5";
 	auto q = E4();
 	if (!q) {
 		syntaxError("E4 at E5 return nullptr");
@@ -169,6 +185,7 @@ std::shared_ptr<RValue> Translator::E5() {								// Правило 8.1
 
 
 std::shared_ptr<RValue> Translator::E5_(std::shared_ptr<RValue> p) {
+	//std::cout << "E5_";
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::opeq) {						// Правило 9.1
 		auto r = E4();
@@ -271,6 +288,7 @@ std::shared_ptr<RValue> Translator::E5_(std::shared_ptr<RValue> p) {
 
 
 std::shared_ptr<RValue> Translator::E4() {								// Правило 15.1
+	//std::cout << "E4";
 	auto q = E3();
 	if (!q) {
 		syntaxError("E3 at E4 return nullptr");
@@ -284,6 +302,7 @@ std::shared_ptr<RValue> Translator::E4() {								// Правило 15.1
 
 
 std::shared_ptr<RValue> Translator::E4_(std::shared_ptr<RValue> p) {
+	//std::cout << "E4_"<<"("<<_currentLexem.toString()<<")";
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::opplus) {					// Правило 16.1
 		auto r = E3();
@@ -323,6 +342,7 @@ std::shared_ptr<RValue> Translator::E4_(std::shared_ptr<RValue> p) {
 
 
 std::shared_ptr<RValue> Translator::E3() {								// Правило 19.1
+	//std::cout << "E3";
 	auto q = E2();
 	if (!q) {
 		syntaxError("E2 at E3 return nullptr");
@@ -336,6 +356,7 @@ std::shared_ptr<RValue> Translator::E3() {								// Правило 19.1
 
 
 std::shared_ptr<RValue> Translator::E3_(std::shared_ptr<RValue> p) {
+	//std::cout << "E3_";
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::opmult) {					// Правило 20.1
 		auto r = E2();
@@ -361,6 +382,7 @@ std::shared_ptr<RValue> Translator::E3_(std::shared_ptr<RValue> p) {
 
 
 std::shared_ptr<RValue> Translator::E2() {
+	//std::cout << "E2";
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::opnot) {						// Правило 22.1
 		auto q = E1();
@@ -386,6 +408,7 @@ std::shared_ptr<RValue> Translator::E2() {
 
 
 std::shared_ptr<RValue> Translator::E1() {
+	//std::cout << "E1";
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::lpar) {						//Правило 24.1
 		auto q = E();
@@ -394,7 +417,7 @@ std::shared_ptr<RValue> Translator::E1() {
 		}
 		getNextLexem();
 		if (_currentLexem.type() != LexemType::rpar) {
-			syntaxError("expected )");
+			syntaxError("expected ) at E1");
 		}
 		return q;
 	}
@@ -407,7 +430,7 @@ std::shared_ptr<RValue> Translator::E1() {
 	if (_currentLexem.type() == LexemType::opinc) {						// Правило 27.1
 		getNextLexem();
 		if (_currentLexem.type() != LexemType::id) {
-			syntaxError("expected id");
+			syntaxError("expected id at E1");
 		}
 		std::string name = _currentLexem.str();
 		auto q = _symbolTable.add(name);
@@ -425,11 +448,12 @@ std::shared_ptr<RValue> Translator::E1() {
 		}
 		return s;
 	}
-	syntaxError("expected ( num char ++ id");
+	syntaxError("expected ( num char ++ id at E1");
 }
 
 
 std::shared_ptr<RValue> Translator::E1_(std::string p) {				// Правило 29.1
+	//std::cout << "E1_";
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::opinc) {
 		auto s = _symbolTable.add(p);
