@@ -108,15 +108,14 @@ std::shared_ptr<RValue> Translator::E7_(std::shared_ptr<RValue> p) {
 	//std::cout << "E7_";
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::opor) {						// Правило 3.1
-		auto s = _symbolTable.alloc();
-		if (!s) {
-			syntaxError("alloc at E7_ return nullptr");
-		}
 		auto r = E6();
 		if (!r) {
 			syntaxError("E6 at E7_ return nullptr");
 		}
-
+		auto s = _symbolTable.alloc();
+		if (!s) {
+			syntaxError("alloc at E7_ return nullptr");
+		}
 		generateAtom(std::make_shared<BinaryOpAtom>(BinaryOpAtom("OR", p, r, s)));
 		auto t = E7_(s);
 		if (!t) {
@@ -149,15 +148,14 @@ std::shared_ptr<RValue> Translator::E6_(std::shared_ptr<RValue> p) {
 	//std::cout << "E6_";
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::opand) {						// Правило 6.1
-		auto s = _symbolTable.alloc();
-		if (!s) {
-			syntaxError("alloc at E6_ return nullptr");
-		}
 		auto r = E5();
 		if (!r) {
 			syntaxError("E5 at E6_ return nullptr");
 		}
-
+		auto s = _symbolTable.alloc();
+		if (!s) {
+			syntaxError("alloc at E6_ return nullptr");
+		}
 		generateAtom(std::make_shared<BinaryOpAtom>(BinaryOpAtom("AND", p, r, s)));
 		auto t = E6_(s);
 		if (!t) {
@@ -190,6 +188,10 @@ std::shared_ptr<RValue> Translator::E5_(std::shared_ptr<RValue> p) {
 	//std::cout << "E5_";
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::opeq) {						// Правило 9.1
+		auto r = E4();
+		if (!r) {
+			syntaxError("E4 at E5_ return nullptr");
+		}
 		auto s = _symbolTable.alloc();
 		if (!s) {
 			syntaxError("alloc at E5_ return nullptr");
@@ -197,10 +199,6 @@ std::shared_ptr<RValue> Translator::E5_(std::shared_ptr<RValue> p) {
 		auto l = newLabel();
 		if (!l) {
 			syntaxError("newLabel at E5_ return nullptr");
-		}
-		auto r = E4();
-		if (!r) {
-			syntaxError("E4 at E5_ return nullptr");
 		}
 		generateAtom(std::make_shared<UnaryOpAtom>(UnaryOpAtom("MOV", std::make_shared<NumberOperand>(NumberOperand(1)), s)));
 		generateAtom(std::make_shared<ConditionalJumpAtom>(ConditionalJumpAtom("EQ", p, r, l)));
@@ -209,6 +207,10 @@ std::shared_ptr<RValue> Translator::E5_(std::shared_ptr<RValue> p) {
 		return s;
 	}
 	if (_currentLexem.type() == LexemType::opne) {						// Правило 10.1
+		auto r = E4();
+		if (!r) {
+			syntaxError("E4 at E5_ return nullptr");
+		}
 		auto s = _symbolTable.alloc();
 		if (!s) {
 			syntaxError("alloc at E5_ return nullptr");
@@ -216,10 +218,6 @@ std::shared_ptr<RValue> Translator::E5_(std::shared_ptr<RValue> p) {
 		auto l = newLabel();
 		if (!l) {
 			syntaxError("newLabel at E5_ return nullptr");
-		}
-		auto r = E4();
-		if (!r) {
-			syntaxError("E4 at E5_ return nullptr");
 		}
 		generateAtom(std::make_shared<UnaryOpAtom>(UnaryOpAtom("MOV", std::make_shared<NumberOperand>(NumberOperand(1)), s)));
 		generateAtom(std::make_shared<ConditionalJumpAtom>(ConditionalJumpAtom("NE", p, r, l)));
@@ -228,6 +226,10 @@ std::shared_ptr<RValue> Translator::E5_(std::shared_ptr<RValue> p) {
 		return s;
 	}
 	if (_currentLexem.type() == LexemType::opgt) {						// Правило 11.1
+		auto r = E4();
+		if (!r) {
+			syntaxError("E4 at E5_ return nullptr");
+		}
 		auto s = _symbolTable.alloc();
 		if (!s) {
 			syntaxError("alloc at E5_ return nullptr");
@@ -235,10 +237,6 @@ std::shared_ptr<RValue> Translator::E5_(std::shared_ptr<RValue> p) {
 		auto l = newLabel();
 		if (!l) {
 			syntaxError("newLabel at E5_ return nullptr");
-		}
-		auto r = E4();
-		if (!r) {
-			syntaxError("E4 at E5_ return nullptr");
 		}
 		generateAtom(std::make_shared<UnaryOpAtom>(UnaryOpAtom("MOV", std::make_shared<NumberOperand>(NumberOperand(1)), s)));
 		generateAtom(std::make_shared<ConditionalJumpAtom>(ConditionalJumpAtom("GT", p, r, l)));
@@ -247,6 +245,10 @@ std::shared_ptr<RValue> Translator::E5_(std::shared_ptr<RValue> p) {
 		return s;
 	}
 	if (_currentLexem.type() == LexemType::oplt) {						// Правило 12.1
+		auto r = E4();
+		if (!r) {
+			syntaxError("E4 at E5_ return nullptr");
+		}
 		auto s = _symbolTable.alloc();
 		if (!s) {
 			syntaxError("alloc at E5_ return nullptr");
@@ -254,10 +256,6 @@ std::shared_ptr<RValue> Translator::E5_(std::shared_ptr<RValue> p) {
 		auto l = newLabel();
 		if (!l) {
 			syntaxError("newLabel at E5_ return nullptr");
-		}
-		auto r = E4();
-		if (!r) {
-			syntaxError("E4 at E5_ return nullptr");
 		}
 		generateAtom(std::make_shared<UnaryOpAtom>(UnaryOpAtom("MOV", std::make_shared<NumberOperand>(NumberOperand(1)), s)));
 		generateAtom(std::make_shared<ConditionalJumpAtom>(ConditionalJumpAtom("LT", p, r, l)));
@@ -266,6 +264,10 @@ std::shared_ptr<RValue> Translator::E5_(std::shared_ptr<RValue> p) {
 		return s;
 	}
 	if (_currentLexem.type() == LexemType::ople) {						// Правило 13.1
+		auto r = E4();
+		if (!r) {
+			syntaxError("E4 at E5_ return nullptr");
+		}
 		auto s = _symbolTable.alloc();
 		if (!s) {
 			syntaxError("alloc at E5_ return nullptr");
@@ -273,10 +275,6 @@ std::shared_ptr<RValue> Translator::E5_(std::shared_ptr<RValue> p) {
 		auto l = newLabel();
 		if (!l) {
 			syntaxError("newLabel at E5_ return nullptr");
-		}
-		auto r = E4();
-		if (!r) {
-			syntaxError("E4 at E5_ return nullptr");
 		}
 		generateAtom(std::make_shared<UnaryOpAtom>(UnaryOpAtom("MOV", std::make_shared<NumberOperand>(NumberOperand(1)), s)));
 		generateAtom(std::make_shared<ConditionalJumpAtom>(ConditionalJumpAtom("LE", p, r, l)));
@@ -307,15 +305,14 @@ std::shared_ptr<RValue> Translator::E4_(std::shared_ptr<RValue> p) {
 	//std::cout << "E4_"<<"("<<_currentLexem.toString()<<")";
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::opplus) {					// Правило 16.1
-		auto s = _symbolTable.alloc();
-		if (!s) {
-			syntaxError("alloc at E4_ return nullptr");
-		}
 		auto r = E3();
 		if (!r) {
 			syntaxError("E3 at E4_ return nullptr");
 		}
-
+		auto s = _symbolTable.alloc();
+		if (!s) {
+			syntaxError("alloc at E4_ return nullptr");
+		}
 		generateAtom(std::make_shared<BinaryOpAtom>(BinaryOpAtom("ADD", p, r, s)));
 		auto t = E4_(s);
 		if (!t) {
@@ -324,15 +321,14 @@ std::shared_ptr<RValue> Translator::E4_(std::shared_ptr<RValue> p) {
 		return t;
 	}
 	if (_currentLexem.type() == LexemType::opminus) {					// Правило 17.1
-		auto s = _symbolTable.alloc();
-		if (!s) {
-			syntaxError("alloc at E4_ return nullptr");
-		}
 		auto r = E3();
 		if (!r) {
 			syntaxError("E3 at E4_ return nullptr");
 		}
-
+		auto s = _symbolTable.alloc();
+		if (!s) {
+			syntaxError("alloc at E4_ return nullptr");
+		}
 		generateAtom(std::make_shared<BinaryOpAtom>(BinaryOpAtom("SUB", p, r, s)));
 		auto t = E4_(s);
 		if (!t) {
@@ -389,16 +385,14 @@ std::shared_ptr<RValue> Translator::E2() {
 	//std::cout << "E2";
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::opnot) {						// Правило 22.1
-		auto r = _symbolTable.alloc();
-		if (!r) {
-			syntaxError("alloc at E2 return nullptr");
-		}
 		auto q = E1();
 		if (!q) {
 			syntaxError("E1 at E2 return nullptr");
 		}
-		
-
+		auto r = _symbolTable.alloc();
+		if (!r) {
+			syntaxError("alloc at E2 return nullptr");
+		}
 		generateAtom(std::make_shared<UnaryOpAtom>(UnaryOpAtom("NOT", q, r)));
 		return r;
 	}
@@ -462,15 +456,14 @@ std::shared_ptr<RValue> Translator::E1_(std::string p) {				// Правило 29.1
 	//std::cout << "E1_";
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::opinc) {
-		auto r = _symbolTable.alloc();
-		if (!r) {
-			syntaxError("alloc at E1_ return nullptr");
-		}
 		auto s = _symbolTable.add(p);
 		if (!s) {
 			syntaxError("add at E1_ return nullptr");
 		}
-
+		auto r = _symbolTable.alloc();
+		if (!r) {
+			syntaxError("alloc at E1_ return nullptr");
+		}
 		generateAtom(std::make_shared<UnaryOpAtom>("MOV", s, r));
 		generateAtom(std::make_shared<BinaryOpAtom>(BinaryOpAtom("ADD", s, std::make_shared<NumberOperand>(NumberOperand(1)), s)));
 		return r;
