@@ -1965,3 +1965,46 @@ TEST(integrat_grammar_tests, fifth) {
 		EXPECT_EQ(s_out2.str(), "");
 	}
 }
+
+TEST(symboltable, one_a) {
+	SymbolTable table = SymbolTable();
+	std::ostringstream os;
+	auto a = table.add("a");
+	table.print(os);
+	std::ostringstream os2;
+	os2 << "code\tname\tkind\ttype\tlen\tinit\tscope\toffset\n0\ta\tunknown\tunknown\t-1\t0\t-1\t-1\n";
+	EXPECT_EQ(os.str(), os2.str());
+}
+
+TEST(symboltable, two_a_int) {
+	SymbolTable table = SymbolTable();
+	std::ostringstream os;
+	auto a = table.add("a");
+	auto b = table.add("8");
+	table.print(os);
+	std::ostringstream os2;
+	os2 << "code\tname\tkind\ttype\tlen\tinit\tscope\toffset\n0\ta\tunknown\tunknown\t-1\t0\t-1\t-1\n1\t8\tunknown\tunknown\t-1\t0\t-1\t-1\n";
+	EXPECT_EQ(os.str(), os2.str());
+}
+
+TEST(call_atom, call) {
+	SymbolTable table = SymbolTable();
+	auto f = table.add("func1");
+	auto result = table.add("res");
+	CallAtom atom = CallAtom(f, result);
+	EXPECT_EQ(atom.toString(), "(CALL, 0,, 1)");
+}
+
+TEST(ret_atom, ret) {
+	SymbolTable table = SymbolTable();
+	auto result = table.add("res");
+	RetAtom atom = RetAtom(result);
+	EXPECT_EQ(atom.toString(), "(RET,,, 0)");
+}
+
+TEST(param_atom, param) {
+	SymbolTable table = SymbolTable();
+	auto param = table.add("p");
+	ParamAtom atom = ParamAtom(param);
+	EXPECT_EQ(atom.toString(), "(PARAM,,, 0)");
+}

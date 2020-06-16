@@ -126,9 +126,10 @@ std::string TableRecord::toString(RecordType type) {
 void SymbolTable::print(std::ostream& stream) {
 	stream << "code\t" << "name\t" << "kind\t" << "type\t" << "len\t" << "init\t" << "scope\t" << "offset"<<std::endl;
 	for (int i = 0; i < _records.size();i++) {
-		stream << i << "\t" << _records[i]._name << "\t"<<_records[i].toString(_records[i]._kind) <<"\t"<<
-		_records[i].toString(_records[i]._type) << "\t"<<std::to_string(_records[i]._len) << "\t"<< 
-		std::to_string(_records[i]._init)<< "\t" << std::to_string(_records[i]._scope) << "\t"<< 
-		std::to_string(_records[i]._offset)<<std::endl;
+		TableRecord current_el = _records[i];
+		stream << i << "\t" << current_el._name << "\t"<< current_el.toString(current_el._kind) <<"\t"<<
+			current_el.toString(current_el._type) << "\t"<<std::to_string(current_el._len) << "\t"<<
+		std::to_string(current_el._init)<< "\t" << std::to_string(current_el._scope) << "\t"<<
+		std::to_string(current_el._offset)<<std::endl;
 	}
 }
