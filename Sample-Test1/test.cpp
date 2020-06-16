@@ -1986,3 +1986,25 @@ TEST(symboltable, two_a_int) {
 	os2 << "code\tname\tkind\ttype\tlen\tinit\tscope\toffset\n0\ta\tunknown\tunknown\t-1\t0\t-1\t-1\n1\t8\tunknown\tunknown\t-1\t0\t-1\t-1\n";
 	EXPECT_EQ(os.str(), os2.str());
 }
+
+TEST(call_atom, call) {
+	SymbolTable table = SymbolTable();
+	auto f = table.add("func1");
+	auto result = table.add("res");
+	CallAtom atom = CallAtom(f, result);
+	EXPECT_EQ(atom.toString(), "(CALL, 0,, 1)");
+}
+
+TEST(ret_atom, ret) {
+	SymbolTable table = SymbolTable();
+	auto result = table.add("res");
+	RetAtom atom = RetAtom(result);
+	EXPECT_EQ(atom.toString(), "(RET,,, 0)");
+}
+
+TEST(param_atom, param) {
+	SymbolTable table = SymbolTable();
+	auto param = table.add("p");
+	ParamAtom atom = ParamAtom(param);
+	EXPECT_EQ(atom.toString(), "(PARAM,,, 0)");
+}
