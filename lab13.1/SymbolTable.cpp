@@ -37,8 +37,38 @@ std::shared_ptr<MemoryOperand> SymbolTable::alloc() {
 }
 
 
+std::string SymbolTable::TableRecord::toString(RecordKind kind) {
+	if (kind == RecordKind::unknown) {
+		return "unknown";
+	}
+	else if (kind == RecordKind::var) {
+		return "var";
+	}
+	else if (kind == RecordKind::func) {
+		return "func";
+	}
+}
+
+
+std::string SymbolTable::TableRecord::toString(RecordType type) {
+	if (type == RecordType::unknown) {
+		return "unknown";
+	}
+	else if (type == RecordType::integer) {
+		return "int";
+	}
+	else if (type == RecordType::chr) {
+		return "char";
+	}
+}
+
+
 void SymbolTable::print(std::ostream& stream) {
+	stream << "code\t" << "name\t" << "kind\t" << "type\t" << "len\t" << "init\t" << "scope\t" << "offset"<<std::endl;
 	for (int i = 0; i < _records.size();i++) {
-		stream << i << " " << _records[i]._name<<std::endl;
+		stream << i << "\t" << _records[i]._name << "\t"<<_records[i].toString(_records[i]._kind) <<"\t"<<
+		_records[i].toString(_records[i]._type) << "\t"<<std::to_string(_records[i]._len) << "\t"<< 
+		std::to_string(_records[i]._init)<< "\t" << std::to_string(_records[i]._scope) << "\t"<< 
+		std::to_string(_records[i]._offset)<<std::endl;
 	}
 }
