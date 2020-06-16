@@ -17,23 +17,78 @@ const SymbolTable::TableRecord& SymbolTable::operator [](const int index) const 
 	return _records[index];
 }
 
-std::shared_ptr<MemoryOperand> SymbolTable::add(const std::string& name) {
-	std::shared_ptr<MemoryOperand> MemOp;
-	int i = 0;
-	for (i; i < _records.size(); i++) {
-		if (_records[i]._name == name) {
-			MemOp = std::make_shared<MemoryOperand>(MemoryOperand(i,this));
-			return MemOp;
-		}
-	}
-	_records.push_back(name);
-	MemOp = std::make_shared<MemoryOperand>(MemoryOperand(i, this));
-	return MemOp;
+
+std::shared_ptr<MemoryOperand> SymbolTable::alloc(Scope scope) {
+	return this->addVar("temp" + std::to_string(_temp_counter++), scope, TableRecord::RecordType::unknown);
 }
 
 
-std::shared_ptr<MemoryOperand> SymbolTable::alloc() {
-	return this->add("temp" + std::to_string(_temp_counter++));
+std::shared_ptr<MemoryOperand> SymbolTable::addVar(const std::string& name, const Scope scope, const TableRecord::RecordType type, const int init) {
+	std::shared_ptr<MemoryOperand> MemOp;
+	int i = 0;
+	for (i;i < _records.size();i++) {
+		if (_records[i]._name == name && _records[i]._scope == scope) {
+			return nullptr;
+		}
+	}
+	_records.push_back(name);
+	_records[i]._scope = scope;
+	_records[i]._type = type;
+	_records[i]._init = init;
+	_records[i]._kind = TableRecord::RecordKind::var;
+	return std::make_shared<MemoryOperand>(MemoryOperand(i, this));
+}
+
+
+std::shared_ptr<MemoryOperand> SymbolTable::addFunc(const std::string& name, const TableRecord::RecordType type, const int len) {
+	int i = 0;
+	for (i;i < _records.size();i++) {
+		if (_records[i]._name == name) {
+			return nullptr;
+		}
+	}
+	std::shared_ptr<MemoryOperand> MemOp;
+	_records.push_back(name);
+	_records[i]._type = type;
+	_records[i]._len = len;
+	_records[i]._kind = TableRecord::RecordKind::func;
+	return std::make_shared<MemoryOperand>(MemoryOperand(i, this));
+}
+
+
+std::shared_ptr<MemoryOperand> SymbolTable::checkVar(const Scope scope, const std::string& name) {
+	int i = 0;
+	for (i;i < _records.size();i++) {
+		if (_records[i]._name == name && _records[i]._scope == scope && _records[i]._kind == TableRecord::RecordKind::var 
+			&& _records[i]._type != TableRecord::RecordType::unknown) {
+			return std::make_shared<MemoryOperand>(MemoryOperand(i, this));
+		}
+	}
+	i = 0;
+	for (i;i < _records.size();i++) {
+		if (_records[i]._name == name && _records[i]._scope == GlobalScope && _records[i]._kind == TableRecord::RecordKind::var
+			&& _records[i]._type != TableRecord::RecordType::unknown) {
+			return std::make_shared<MemoryOperand>(MemoryOperand(i, this));
+		}
+	}
+	return nullptr;
+}
+
+
+std::shared_ptr<MemoryOperand> SymbolTable::checkFunc(const std::string& name, int len) {
+	int i = 0;
+	for (i;i < _records.size();i++) {
+		if (_records[i]._name == name && _records[i]._scope == GlobalScope && _records[i]._kind == TableRecord::RecordKind::func
+			&& _records[i]._type != TableRecord::RecordType::unknown) {
+			if (_records[i]._len == len) {
+				return std::make_shared<MemoryOperand>(MemoryOperand(i, this));
+			}
+			else {
+				return nullptr;
+			}
+		}
+	}
+	return nullptr;
 }
 
 

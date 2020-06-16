@@ -8,6 +8,11 @@ MemoryOperand::MemoryOperand(int index, const SymbolTable* symbolTable) {
 }
 
 
+int MemoryOperand::index() const {
+	return _index;
+}
+
+
 std::string MemoryOperand::toString() const {
 	return std::to_string(_index);
 }

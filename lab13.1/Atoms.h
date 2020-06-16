@@ -24,6 +24,7 @@ protected:
 	const SymbolTable* _symbolTable;
 public:
 	MemoryOperand(int index, const SymbolTable* symbolTable);
+	int index() const;
 	std::string toString() const override;
 };
 

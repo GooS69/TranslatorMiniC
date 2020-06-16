@@ -30,7 +30,10 @@ protected:
 public:
 	SymbolTable();
 	const TableRecord& operator [](const int index) const;
-	std::shared_ptr<MemoryOperand> add(const std::string& name);
-	std::shared_ptr<MemoryOperand> alloc();
+	std::shared_ptr<MemoryOperand> alloc(Scope scope);
+	std::shared_ptr<MemoryOperand> addVar(const std::string& name, const Scope scope, const TableRecord::RecordType type, const int init = 0);
+	std::shared_ptr<MemoryOperand> addFunc(const std::string& name, const TableRecord::RecordType type, const int len);
+	std::shared_ptr<MemoryOperand> checkVar(const Scope scope, const std::string& name);
+	std::shared_ptr<MemoryOperand> checkFunc(const std::string& name, int len);
 	void print(std::ostream& stream);
 };
