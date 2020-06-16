@@ -1965,3 +1965,24 @@ TEST(integrat_grammar_tests, fifth) {
 		EXPECT_EQ(s_out2.str(), "");
 	}
 }
+
+TEST(symboltable, one_a) {
+	SymbolTable table = SymbolTable();
+	std::ostringstream os;
+	auto a = table.add("a");
+	table.print(os);
+	std::ostringstream os2;
+	os2 << "code\tname\tkind\ttype\tlen\tinit\tscope\toffset\n0\ta\tunknown\tunknown\t-1\t0\t-1\t-1\n";
+	EXPECT_EQ(os.str(), os2.str());
+}
+
+TEST(symboltable, two_a_int) {
+	SymbolTable table = SymbolTable();
+	std::ostringstream os;
+	auto a = table.add("a");
+	auto b = table.add("8");
+	table.print(os);
+	std::ostringstream os2;
+	os2 << "code\tname\tkind\ttype\tlen\tinit\tscope\toffset\n0\ta\tunknown\tunknown\t-1\t0\t-1\t-1\n1\t8\tunknown\tunknown\t-1\t0\t-1\t-1\n";
+	EXPECT_EQ(os.str(), os2.str());
+}
