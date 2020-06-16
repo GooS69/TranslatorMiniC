@@ -121,3 +121,34 @@ OutAtom::OutAtom(std::shared_ptr<Operand> value) {
 std::string OutAtom::toString() const {
 	return "(OUT,,, " + _value->toString() + ")";
 }
+
+
+CallAtom::CallAtom(std::shared_ptr<MemoryOperand> left, std::shared_ptr<MemoryOperand> result) {
+	_left = left;
+	_result = result;
+}
+
+
+std::string CallAtom::toString() const {
+	return "(CALL, " + _left->toString() + ",, " + _result->toString() + ")";
+}
+
+
+RetAtom::RetAtom(std::shared_ptr<RValue> result) {
+	_result = result;
+}
+
+
+std::string RetAtom::toString() const {
+	return "(RET,,, " + _result->toString() + ")";
+}
+
+
+ParamAtom::ParamAtom(std::shared_ptr<RValue> param) {
+	_param = param;
+}
+
+
+std::string ParamAtom::toString() const {
+	return "(PARAM,,, " + _param->toString() + ")";
+}

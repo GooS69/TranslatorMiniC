@@ -12,7 +12,7 @@ public:
 };
 
 
-class RValue: public Operand {
+class RValue : public Operand {
 public:
 	RValue() {};
 };
@@ -28,7 +28,7 @@ public:
 };
 
 
-class NumberOperand :public RValue {
+class NumberOperand : public RValue {
 protected:
 	int _value;
 public:
@@ -47,7 +47,7 @@ public:
 };
 
 
-class LabelOperand :public Operand {
+class LabelOperand : public Operand {
 protected:
 	int _labelID;
 public: 
@@ -62,7 +62,7 @@ public:
 	virtual std::string toString() const = 0;
 };
 
-class BinaryOpAtom :public Atom {
+class BinaryOpAtom : public Atom {
 protected:
 	std::string _name;
 	std::shared_ptr<RValue> _left;
@@ -85,7 +85,7 @@ public:
 };
 
 
-class ConditionalJumpAtom :public Atom {
+class ConditionalJumpAtom : public Atom {
 protected:
 	std::string _condition;
 	std::shared_ptr<RValue> _left;
@@ -97,7 +97,7 @@ public:
 };
 
 
-class JumpAtom :public Atom {
+class JumpAtom : public Atom {
 protected:
 	std::shared_ptr<LabelOperand> _label;
 public:
@@ -115,7 +115,7 @@ public:
 };
 
 
-class InAtom :public Atom {
+class InAtom : public Atom {
 protected:
 	std::shared_ptr<MemoryOperand> _result;
 public:
@@ -124,10 +124,38 @@ public:
 };
 
 
-class OutAtom :public Atom {
+class OutAtom : public Atom {
 protected:
 	std::shared_ptr<Operand> _value;
 public:
 	OutAtom(std::shared_ptr<Operand> value);
+	std::string toString() const override;
+};
+
+
+class CallAtom : public Atom{
+protected:
+	std::shared_ptr<MemoryOperand> _left;
+	std::shared_ptr<MemoryOperand> _result;
+public:
+	CallAtom(std::shared_ptr<MemoryOperand> left, std::shared_ptr<MemoryOperand> result);
+	std::string toString() const override;
+};
+
+
+class RetAtom : public Atom {
+protected:
+	std::shared_ptr<RValue> _result;
+public:
+	RetAtom(std::shared_ptr<RValue> result);
+	std::string toString() const override;
+};
+
+
+class ParamAtom : public Atom {
+protected:
+	std::shared_ptr<RValue> _param;
+public:
+	ParamAtom(std::shared_ptr<RValue> param);
 	std::string toString() const override;
 };
