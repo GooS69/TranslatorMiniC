@@ -17,7 +17,7 @@ Translator::Translator(std::istream& is) :_scanner(Scanner(is)){
 
 
 void Translator::startTranslate() {
-	E(5);
+	E(GlobalScope);
 	if (_currentLexem.type() != LexemType::eof) {
 		syntaxError("expected operation(there are still tokens)");
 	}
@@ -473,6 +473,19 @@ std::shared_ptr<RValue> Translator::E1_(Scope scope, std::string p) {				// Прав
 		generateAtom(scope, std::make_shared<BinaryOpAtom>(BinaryOpAtom("ADD", s, std::make_shared<NumberOperand>(NumberOperand(1)), s)));
 		return r;
 	}
+	if (_currentLexem.type() == LexemType::lpar) {						// Правило 30.1
+		int n = ArgList(scope);
+		auto s = _symbolTable.checkFunc(p, n);
+		if (!s) {
+			syntaxError("checkFunl at E1_ return nullptr");
+		}
+		auto r = _symbolTable.alloc(scope);
+		if (!r) {
+			syntaxError("alloc at E1_ return nullptr");
+		}
+		generateAtom(scope, std::make_shared<CallAtom>(CallAtom(s, r)));
+		return r;
+	}
 	_epsilonFlag = true;												// Правило 31.1
 	auto q = _symbolTable.checkVar(scope, p);
 	if (!q) {
@@ -482,3 +495,181 @@ std::shared_ptr<RValue> Translator::E1_(Scope scope, std::string p) {				// Прав
 }
 
 
+int Translator::ArgList(Scope scope) {
+	getNextLexem();
+	_epsilonFlag = true;												// Правило 32.1
+	if (_currentLexem.type() == LexemType::opnot || _currentLexem.type() == LexemType::lpar || _currentLexem.type() == LexemType::num
+		|| _currentLexem.type() == LexemType::chr || _currentLexem.type() == LexemType::opinc || _currentLexem.type() == LexemType::id) {
+		auto p = E(scope);
+		if (!p) {
+			syntaxError("E at ArgList return nullptr");
+		}
+		int m = ParamList_(scope);
+		generateAtom(scope, std::make_shared<ParamAtom>(ParamAtom(p)));
+		return ++m;
+	}
+	return 0;															// Правило 33.1
+}
+
+
+int Translator::ArgList_(Scope scope) {
+	getNextLexem();
+	if (_currentLexem.type() == LexemType::comma) {						// Правило 34.1
+		auto p = E(scope);
+		if (!p) {
+			syntaxError("E at ArgList_ return nullptr");
+		}
+		int m = ArgList_(scope);
+		generateAtom(scope, std::make_shared<ParamAtom>(ParamAtom(p)));
+		return ++m;
+	}
+	_epsilonFlag = true;												// Правило 35.1
+	return 0;					
+}
+
+//------------------------------------------------------------------------------------------//
+
+
+
+void Translator::DeclareStmt(Scope scope) {								// Правило 1.2
+	TableRecord::RecordType p = Type(scope);
+	getNextLexem();
+	if (_currentLexem.type() == LexemType::id) {
+		std::string name = _currentLexem.str();
+		DeclareStmt_(scope, p, name);
+		return;
+	}
+	else {
+		syntaxError("expected id in DeclareStmt");
+		return;
+	}
+}
+
+
+void Translator::DeclareStmt_(Scope scope, TableRecord::RecordType p, std::string q) {
+	getNextLexem();
+	if (_currentLexem.type() == LexemType::lpar) {						// Правило 2.2
+		if (scope > -1) {
+			syntaxError("Scope > -1 at DeclareStmt_");
+		}
+		std::shared_ptr<MemoryOperand> c_ = _symbolTable.addFunc(q, p, 0);
+		int n = ParamList(c_->index());
+		_symbolTable.changeLen(c_->index(), n);
+		getNextLexem();
+		if (_currentLexem.type() != LexemType::rpar) {
+			syntaxError("expected ) at DeclareStmt_");
+		}
+		getNextLexem();
+		if (_currentLexem.type() != LexemType::lbrace) {
+			syntaxError("expected { at DeclareStmt_");
+		}
+		StmtList(c_->index());
+		getNextLexem();
+		if (_currentLexem.type() != LexemType::rbrace) {
+			syntaxError("expected } at DeclareStmt_");
+		}
+		generateAtom(c_->index(),std::make_shared<RetAtom>(RetAtom(std::make_shared<NumberOperand>(NumberOperand(0)))));
+		return;
+	}
+	if (_currentLexem.type() == LexemType::opassign) {					// Правило 3.2
+		getNextLexem();
+		if (_currentLexem.type() != LexemType::num) {
+			syntaxError("expected num at DeclareStmt_");
+		}
+		_symbolTable.addVar(q, scope, p, _currentLexem.value());
+		DeclVarList_(scope, p);
+		getNextLexem();
+		if (_currentLexem.type() != LexemType::semicolon) {
+			syntaxError("expected ; at DeclareStmt_");
+		}
+		return;
+	}
+	_epsilonFlag = true;
+	_symbolTable.addVar(q, scope, p);									// Правило 4.2
+	DeclVarList_(scope, p);
+	return;
+}
+
+
+TableRecord::RecordType Translator::Type(Scope scope) {
+	getNextLexem();
+	if (_currentLexem.type() == LexemType::kwchar) {					// Правило 5.2
+		return TableRecord::RecordType::chr;
+	}
+	if (_currentLexem.type() == LexemType::kwint) {						// Правило 6.2
+		return TableRecord::RecordType::integer;
+	}
+	syntaxError("expected kwchar kwint at Type");
+	return TableRecord::RecordType::unknown;
+}
+
+
+void Translator::DeclVarList_(Scope scope, TableRecord::RecordType p) {
+	getNextLexem();
+	if (_currentLexem.type() == LexemType::comma) {						// Правило 7.2
+		getNextLexem();
+		if (_currentLexem.type() != LexemType::id) {
+			syntaxError("expected id at DeclVarList_");
+		}
+		InitVar(scope, p, _currentLexem.str());
+		DeclVarList_(scope, p);
+		return;
+	}
+	_epsilonFlag = true;												// Правило 8.2
+	return;
+}
+
+
+void Translator::InitVar(Scope scope, TableRecord::RecordType p, std::string q) {
+	getNextLexem();
+	if (_currentLexem.type() == LexemType::opassign) {					// Правило 9.2
+		getNextLexem();
+		if (_currentLexem.type() != LexemType::chr && _currentLexem.type() != LexemType::num) {
+			syntaxError("expected chr num at DeclVarList_");
+		}
+		_symbolTable.addVar(q, scope, p, _currentLexem.value());
+		return;
+	}
+	_symbolTable.addVar(q, scope, p);									// Правило 10.2
+	_epsilonFlag = true;
+	return;
+}
+
+
+int Translator::ParamList(Scope scope) {
+	getNextLexem();
+	_epsilonFlag = true;
+	if (_currentLexem.type() == LexemType::kwchar || _currentLexem.type() == LexemType::kwint) {	// Правило 11.2
+		TableRecord::RecordType q = Type(scope);
+		getNextLexem();
+		if (_currentLexem.type() != LexemType::id) {
+			syntaxError("expected id at ParamList");
+		}
+		_symbolTable.addVar(_currentLexem.str(), scope, q);
+		int s = ParamList_(scope);
+		return ++s;
+	}
+	return 0;																// Правило 12.2
+}
+
+
+int Translator::ParamList_(Scope scope) {
+	getNextLexem();
+	if (_currentLexem.type() == LexemType::comma) {							// Правило 13.2
+		TableRecord::RecordType q = Type(scope);
+		getNextLexem();
+		if (_currentLexem.type() != LexemType::id) {
+			syntaxError("expected id at ParamList_");
+		}
+		_symbolTable.addVar(_currentLexem.str(), scope, q);
+		int s = ParamList_(scope);
+		return ++s;
+	}
+	_epsilonFlag = true;													// Правило 14.2
+	return 0;
+}
+
+
+void Translator::StmtList(Scope scope) {
+	return;																	// Правило 16.2
+}

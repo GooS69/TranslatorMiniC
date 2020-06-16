@@ -5,21 +5,26 @@ SymbolTable::SymbolTable(){
 	_records = std::vector<TableRecord>{};
 }
 
-bool SymbolTable::TableRecord::operator == (const TableRecord& other)const {
+bool TableRecord::operator == (const TableRecord& other)const {
 	return _name == other._name;
 }
 
-SymbolTable::TableRecord::TableRecord(const std::string& name) {
+TableRecord::TableRecord(const std::string& name) {
 	_name = name;
 }
 
-const SymbolTable::TableRecord& SymbolTable::operator [](const int index) const {
+const TableRecord& SymbolTable::operator [](const int index) const {
 	return _records[index];
 }
 
 
+void SymbolTable::changeLen(int index, int len) {
+	_records[index]._len = len;
+}
+
+
 std::shared_ptr<MemoryOperand> SymbolTable::alloc(Scope scope) {
-	return this->addVar("temp" + std::to_string(_temp_counter++), scope, TableRecord::RecordType::unknown);
+	return this->addVar("temp" + std::to_string(_temp_counter++), scope, TableRecord::RecordType::integer);
 }
 
 
@@ -92,7 +97,7 @@ std::shared_ptr<MemoryOperand> SymbolTable::checkFunc(const std::string& name, i
 }
 
 
-std::string SymbolTable::TableRecord::toString(RecordKind kind) {
+std::string TableRecord::toString(RecordKind kind) {
 	if (kind == RecordKind::unknown) {
 		return "unknown";
 	}
@@ -105,7 +110,7 @@ std::string SymbolTable::TableRecord::toString(RecordKind kind) {
 }
 
 
-std::string SymbolTable::TableRecord::toString(RecordType type) {
+std::string TableRecord::toString(RecordType type) {
 	if (type == RecordType::unknown) {
 		return "unknown";
 	}

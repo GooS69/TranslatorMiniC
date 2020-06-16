@@ -42,6 +42,18 @@ protected:
 	std::shared_ptr<RValue> E2(Scope scope);
 	std::shared_ptr<RValue> E1(Scope scope);
 	std::shared_ptr<RValue> E1_(Scope scope, std::string p);
+	int ArgList(Scope scope);
+	int ArgList_(Scope scope);
+
+	void DeclareStmt(Scope scope);
+	void DeclareStmt_(Scope scope, TableRecord::RecordType p, std::string q);
+	TableRecord::RecordType Type(Scope scope);
+	void DeclVarList_(Scope scope, TableRecord::RecordType p);
+	void InitVar(Scope scope, TableRecord::RecordType p, std::string q);
+	int ParamList(Scope scope);
+	int ParamList_(Scope scope);
+	void StmtList(Scope scope);
+
 public:
 	Translator(std::istream& is);
 	void startTranslate();
