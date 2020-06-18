@@ -17,10 +17,10 @@ Translator::Translator(std::istream& is) :_scanner(Scanner(is)){
 
 
 void Translator::startTranslate() {
-	E(GlobalScope);
-	if (_currentLexem.type() != LexemType::eof) {
-		syntaxError("expected operation(there are still tokens)");
-	}
+	StmtList(GlobalScope);
+	//if (_currentLexem.type() != LexemType::eof) {
+	//	syntaxError("expected operation(there are still tokens)");
+	//}
 	printAtoms(std::cout);
 	std::cout << std::endl << "Symbol table" << std::endl;
 	_symbolTable.print(std::cout);
@@ -38,6 +38,7 @@ void Translator::getNextLexem() {
 			lexicalError(_currentLexem.str());
 		}
 		_tokens.push_back(_currentLexem);
+		std::cout << "*" << _currentLexem.toString() << "*";
 	}
 }
 
@@ -483,6 +484,10 @@ std::shared_ptr<RValue> Translator::E1_(Scope scope, std::string p) {				// Прав
 		if (!r) {
 			syntaxError("alloc at E1_ return nullptr");
 		}
+		getNextLexem();
+		if (_currentLexem.type() != LexemType::rpar) {
+			syntaxError("expected ) at E1_");
+		}
 		generateAtom(scope, std::make_shared<CallAtom>(CallAtom(s, r)));
 		return r;
 	}
@@ -532,6 +537,7 @@ int Translator::ArgList_(Scope scope) {
 
 
 void Translator::DeclareStmt(Scope scope) {								// Правило 1.2
+	std::cout << "DeclareStmt " ;
 	TableRecord::RecordType p = Type(scope);
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::id) {
@@ -547,6 +553,7 @@ void Translator::DeclareStmt(Scope scope) {								// Правило 1.2
 
 
 void Translator::DeclareStmt_(Scope scope, TableRecord::RecordType p, std::string q) {
+	std::cout << "DeclareStmt_ " ;
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::lpar) {						// Правило 2.2
 		if (scope > -1) {
@@ -587,11 +594,16 @@ void Translator::DeclareStmt_(Scope scope, TableRecord::RecordType p, std::strin
 	_epsilonFlag = true;
 	_symbolTable.addVar(q, scope, p);									// Правило 4.2
 	DeclVarList_(scope, p);
+	getNextLexem();
+	if (_currentLexem.type() != LexemType::semicolon) {
+		syntaxError("expected ; at DeclareStmt_");
+	}
 	return;
 }
 
 
 TableRecord::RecordType Translator::Type(Scope scope) {
+	std::cout << "Type " ;
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::kwchar) {					// Правило 5.2
 		return TableRecord::RecordType::chr;
@@ -605,6 +617,7 @@ TableRecord::RecordType Translator::Type(Scope scope) {
 
 
 void Translator::DeclVarList_(Scope scope, TableRecord::RecordType p) {
+	std::cout << "DeclVarList_ " ;
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::comma) {						// Правило 7.2
 		getNextLexem();
@@ -621,6 +634,7 @@ void Translator::DeclVarList_(Scope scope, TableRecord::RecordType p) {
 
 
 void Translator::InitVar(Scope scope, TableRecord::RecordType p, std::string q) {
+	std::cout << "InitVar " ;
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::opassign) {					// Правило 9.2
 		getNextLexem();
@@ -637,6 +651,7 @@ void Translator::InitVar(Scope scope, TableRecord::RecordType p, std::string q) 
 
 
 int Translator::ParamList(Scope scope) {
+	std::cout << "ParamList " ;
 	getNextLexem();
 	_epsilonFlag = true;
 	if (_currentLexem.type() == LexemType::kwchar || _currentLexem.type() == LexemType::kwint) {	// Правило 11.2
@@ -654,6 +669,7 @@ int Translator::ParamList(Scope scope) {
 
 
 int Translator::ParamList_(Scope scope) {
+	std::cout << "ParamList_ " ;
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::comma) {							// Правило 13.2
 		TableRecord::RecordType q = Type(scope);
@@ -671,5 +687,403 @@ int Translator::ParamList_(Scope scope) {
 
 
 void Translator::StmtList(Scope scope) {
+	std::cout << "StmtList ";
+	getNextLexem();
+	_epsilonFlag = true;
+	if (_currentLexem.type() == LexemType::kwchar || _currentLexem.type() == LexemType::kwint ||
+		_currentLexem.type() == LexemType::id || _currentLexem.type() == LexemType::kwwhile ||
+		_currentLexem.type() == LexemType::kwfor || _currentLexem.type() == LexemType::kwif ||
+		_currentLexem.type() == LexemType::lbrace || _currentLexem.type() == LexemType::kwin ||
+		_currentLexem.type() == LexemType::kwreturn || _currentLexem.type() == LexemType::semicolon) {
+		Stmt(scope);														// Правило 15.2							
+		StmtList(scope);
+	}
 	return;																	// Правило 16.2
+}
+
+
+
+void Translator::Stmt(Scope scope) {
+	std::cout << "Stmt " ;
+	getNextLexem();
+	if (_currentLexem.type() == LexemType::kwchar || _currentLexem.type() == LexemType::kwint){	
+		_epsilonFlag = true;												// Правило 17.2
+		DeclareStmt(scope);
+		return;
+	}
+	if (_currentLexem.type() == LexemType::id) {							// Правило 18.2
+		_epsilonFlag = true;
+		AssignOrCallOp(scope);
+		return;
+	}
+	if (_currentLexem.type() == LexemType::kwwhile) {						// Правило 19.2
+		_epsilonFlag = true;
+		WhileOp(scope);
+		return;
+	}
+	if (_currentLexem.type() == LexemType::kwfor) {							// Правило 20.2
+		_epsilonFlag = true;
+		ForOp(scope);
+		return;
+	}
+	if (_currentLexem.type() == LexemType::kwif) {							// Правило 21.2
+		_epsilonFlag = true;
+		IfOp(scope);
+		return;
+	}
+
+	//if (_currentLexem.type() == LexemType::kwswitch) {							// Правило 22.2
+	//	_epsilonFlag = true;
+	//	SwitchOp(scope);
+	//	return;
+	//}
+
+	if (_currentLexem.type() == LexemType::kwin) {							// Правило 23.2
+		_epsilonFlag = true;
+		IOp(scope);
+		return;
+	}
+
+	if (_currentLexem.type() == LexemType::kwout) {							// Правило 24.2
+		_epsilonFlag = true;
+		OOp(scope);
+		return;
+	}
+
+
+	if (_currentLexem.type() == LexemType::lbrace) {						// Правило 25.2
+		StmtList(scope);
+		getNextLexem();
+		if (_currentLexem.type() != LexemType::rbrace) {
+			syntaxError("expected } at Stmt");
+		}
+		return;
+	}
+	if (_currentLexem.type() == LexemType::kwreturn) {						// Правило 26.2
+		auto p = E(scope);
+		generateAtom(scope, std::make_shared<RetAtom>(RetAtom(p)));
+		getNextLexem();
+		if (_currentLexem.type() != LexemType::semicolon) {
+			syntaxError("expected ; at Stmt");
+		}
+		return;
+	}
+
+	if (_currentLexem.type() == LexemType::semicolon) {						// Правило 27.2
+		return;
+	}
+
+
+}
+
+
+void Translator::AssignOrCallOp(Scope scope) {								// Правило 28.2
+	std::cout << "AssignOrCallOp " ;
+	AssignOrCall(scope);
+	getNextLexem();
+	if (_currentLexem.type() != LexemType::semicolon) {
+		syntaxError("expected ; at AssignOrCallOp");
+	}
+	return;
+}
+
+
+void Translator::AssignOrCall(Scope scope) {								// Правило 29.2
+	std::cout << "AssignOrCall " ;
+	getNextLexem();
+	if (_currentLexem.type() != LexemType::id) {
+		syntaxError("expected id at AssignOrCall");
+	}
+	AssignOrCall_(scope, _currentLexem.str());
+	return;
+}
+
+
+void Translator::AssignOrCall_(Scope scope, std::string p) {
+	std::cout << "AssignOrCall_ ";
+	getNextLexem();
+	if (_currentLexem.type() == LexemType::opassign) {						// Правило 30.2
+		auto r = _symbolTable.checkVar(scope, p);
+		auto q = E(scope);
+		generateAtom(scope, std::make_shared<UnaryOpAtom>(UnaryOpAtom("MOV", q, r)));
+		return;
+	}
+	if (_currentLexem.type() == LexemType::lpar) {							// Правило 31.2
+		int n = ArgList(scope);
+		auto q = _symbolTable.checkFunc(p, n);
+		auto r = _symbolTable.alloc(scope);
+		getNextLexem();
+		if (_currentLexem.type() != LexemType::rpar) {
+			syntaxError("expected ) at AssignOrCall_");
+		}
+		generateAtom(scope, std::make_shared<CallAtom>(CallAtom(q, r)));
+		return;
+	}
+	syntaxError("expected = ( at AssignOrCall_");
+	return;
+}
+
+
+void Translator::WhileOp(Scope scope) {										// Правило 32.2
+	std::cout << "WhileOp ";
+	getNextLexem();
+	if (_currentLexem.type() != LexemType::kwwhile) {
+		syntaxError("expected while at WhileOp");
+	}
+	auto l1 = newLabel();
+	auto l2 = newLabel();
+	generateAtom(scope, std::make_shared<LabelAtom>(LabelAtom(l1)));
+	getNextLexem();
+	if (_currentLexem.type() != LexemType::lpar) {
+		syntaxError("expected ( at WhileOp");
+	}
+	auto p = E(scope);
+	getNextLexem();
+	if (_currentLexem.type() != LexemType::rpar) {
+		syntaxError("expected ) at WhileOp");
+	}
+	generateAtom(scope, std::make_shared<ConditionalJumpAtom>(ConditionalJumpAtom("EQ", p, std::make_shared<NumberOperand>(NumberOperand(0)),l2)));
+	Stmt(scope);
+	generateAtom(scope, std::make_shared<JumpAtom>(JumpAtom(l1)));
+	generateAtom(scope, std::make_shared<LabelAtom>(LabelAtom(l2)));
+	return;
+}
+
+
+void Translator::ForOp(Scope scope) {											// Правило 33.2
+	std::cout << "ForOp ";
+	getNextLexem();
+	if (_currentLexem.type() != LexemType::kwfor) {
+		syntaxError("expected for at ForOp");
+	}
+	getNextLexem();
+	if (_currentLexem.type() != LexemType::lpar) {
+		syntaxError("expected ( at ForOp");
+	}
+	auto l1 = newLabel();
+	auto l2 = newLabel();
+	auto l3 = newLabel();
+	auto l4 = newLabel();
+	ForInit(scope);
+	generateAtom(scope, std::make_shared<LabelAtom>(LabelAtom(l1)));
+	auto p = ForExp(scope);
+	getNextLexem();
+	if (_currentLexem.type() != LexemType::semicolon) {
+		syntaxError("expected ; at ForOp");
+	}
+	generateAtom(scope, std::make_shared<ConditionalJumpAtom>(ConditionalJumpAtom("EQ", p, std::make_shared<NumberOperand>(NumberOperand(0)), l4)));
+	generateAtom(scope, std::make_shared<JumpAtom>(JumpAtom(l3)));
+	generateAtom(scope, std::make_shared<LabelAtom>(LabelAtom(l2)));
+	ForLoop(scope);
+	generateAtom(scope, std::make_shared<JumpAtom>(JumpAtom(l1)));
+	getNextLexem();
+	if (_currentLexem.type() != LexemType::rpar) {
+		syntaxError("expected ) at ForOp");
+	}
+	generateAtom(scope, std::make_shared<LabelAtom>(LabelAtom(l3)));
+	Stmt(scope);
+	generateAtom(scope, std::make_shared<JumpAtom>(JumpAtom(l2)));
+	generateAtom(scope, std::make_shared<LabelAtom>(LabelAtom(l4)));
+	return;
+}
+
+
+void Translator::ForInit(Scope scope) {
+	std::cout << "ForInit ";
+	getNextLexem();
+	_epsilonFlag = true;
+	if (_currentLexem.type() == LexemType::id) {									// Правило 34.2
+		AssignOrCallOp(scope);
+		return;
+	}
+	return;																			// Правило 35.2
+}
+
+
+std::shared_ptr<RValue> Translator::ForExp(Scope scope) {
+	std::cout << "ForExp ";
+	getNextLexem();
+	_epsilonFlag = true;
+	if (_currentLexem.type() == LexemType::opnot || _currentLexem.type() == LexemType::lpar || _currentLexem.type() == LexemType::num
+		|| _currentLexem.type() == LexemType::chr || _currentLexem.type() == LexemType::opinc || _currentLexem.type() == LexemType::id) {
+		auto q = E(scope);															// Правило 36.2
+		return q;
+	}
+	return std::make_shared<NumberOperand>(NumberOperand(1));						// Правило 37.2
+}
+
+
+void Translator::ForLoop(Scope scope) {
+	std::cout << "ForLoop ";
+	getNextLexem();
+	if (_currentLexem.type() == LexemType::id) {									// Правило 38.2
+		_epsilonFlag = true;
+		AssignOrCallOp(scope);
+		return;
+	}
+	if (_currentLexem.type() == LexemType::opinc) {									// Правило 39.2
+		getNextLexem();
+		if (_currentLexem.type() != LexemType::id) {
+			syntaxError("expected id at ForLoop");
+		}
+		auto p = _symbolTable.checkVar(scope, _currentLexem.str());
+		generateAtom(scope, std::make_shared<BinaryOpAtom>(BinaryOpAtom("ADD", p, std::make_shared<NumberOperand>(NumberOperand(1)), p)));
+		return;
+	}
+	_epsilonFlag = true;															// Правило 40.2
+	return;
+}
+
+
+void Translator::IfOp(Scope scope) {												// Правило 41.2
+	std::cout << "IfOp ";
+	getNextLexem();
+	if (_currentLexem.type() != LexemType::kwif) {
+		syntaxError("expected if at IfOp");
+	}
+	getNextLexem();
+	if (_currentLexem.type() != LexemType::lpar) {
+		syntaxError("expected ( at IfOp");
+	}
+	auto l1 = newLabel();
+	auto l2 = newLabel();
+	auto p = E(scope);
+	getNextLexem();
+	if (_currentLexem.type() != LexemType::rpar) {
+		syntaxError("expected ) at IfOp");
+	}
+	generateAtom(scope, std::make_shared<ConditionalJumpAtom>(ConditionalJumpAtom("EQ", p, std::make_shared<NumberOperand>(NumberOperand(0)), l1)));
+	Stmt(scope);
+	generateAtom(scope, std::make_shared<JumpAtom>(JumpAtom(l2)));
+	generateAtom(scope, std::make_shared<LabelAtom>(LabelAtom(l1)));
+	ElsePart(scope);
+	generateAtom(scope, std::make_shared<LabelAtom>(LabelAtom(l2)));
+	return;
+}
+
+
+void Translator::ElsePart(Scope scope) {
+	std::cout << "ElsePart ";
+	getNextLexem();
+	std::cout << "?????????????";
+	if (_currentLexem.type() == LexemType::kwelse) {									// Правило 42.2
+		std::cout << "?????????????";
+		Stmt(scope);
+		return;
+	}
+	_epsilonFlag = true;																// Правило 43.2
+	return;
+}
+
+//void Translator::SwitchOp(Scope scope) {												// Правило 44.2
+//	getNextLexem();
+//	if (_currentLexem.type() != LexemType::kwswitch) {
+//		syntaxError("expected switch at SwitchOp");
+//	}
+//	getNextLexem();
+//	if (_currentLexem.type() != LexemType::lpar) {
+//		syntaxError("expected ( at SwitchOp");
+//	}
+//	auto p = E(scope);
+//	getNextLexem();
+//	if (_currentLexem.type() != LexemType::rpar) {
+//		syntaxError("expected ) at SwitchOp");
+//	}
+//
+//	getNextLexem();
+//	if (_currentLexem.type() != LexemType::lbrace) {
+//		syntaxError("expected { at SwitchOp");
+//	}
+//	auto end = newLabel();
+//	Cases(scope, p, end);
+//	getNextLexem();
+//	if (_currentLexem.type() != LexemType::rbrace) {
+//		syntaxError("expected } at SwitchOp");
+//	}
+//	generateAtom(scope, std::make_shared<LabelAtom>(LabelAtom(end)));
+//	return;
+//}
+
+
+//void Translator::Cases(Scope scope, std::shared_ptr<RValue> p, std::shared_ptr<LabelOperand> end) {
+//	auto def1 = ACase(scope, p, end);													// Правило 45.2
+//	Cases_(scope, p, end, def1);
+//	return;
+//}
+
+
+//std::shared_ptr<LabelOperand> Translator::ACase(Scope scope, std::shared_ptr<RValue> p, std::shared_ptr<LabelOperand> end) {
+//	getNextLexem();
+//	if (_currentLexem.type() == LexemType::kwcase) {									// Правило 48.2
+//		getNextLexem();
+//		if (_currentLexem.type() != LexemType::num) {
+//			syntaxError("expected num at ACase");
+//		}
+//		int val = _currentLexem.value();
+//		auto next = newLabel();
+//		generateAtom(scope, std::make_shared<ConditionalJumpAtom>(ConditionalJumpAtom("NE", p, std::make_shared<NumberOperand>(NumberOperand(val)), next)));
+//		getNextLexem();
+//		if (_currentLexem.type() != LexemType::colon) {
+//			syntaxError("expected : at ACase");
+//		}
+//		Stmt(scope);
+//		generateAtom(scope, std::make_shared<LabelAtom>(LabelAtom(end)));
+//		generateAtom(scope, std::make_shared<LabelAtom>(LabelAtom(next)));
+//		return;
+//	}
+//	if (_currentLexem.type() == LexemType::kwdefault) {									// Правило 49.2
+//
+//		return;
+//	}
+//	syntaxError("expected case default at ACase");
+//	return;
+//}
+
+
+void Translator::IOp(Scope scope) {														// Правило 50.2
+	getNextLexem();
+	if (_currentLexem.type() != LexemType::kwin) {
+		syntaxError("expected in at IOp");
+	}
+	getNextLexem();
+	if (_currentLexem.type() != LexemType::id) {
+		syntaxError("expected id at IOp");
+	}
+	std::string name = _currentLexem.str();
+	getNextLexem();
+	if (_currentLexem.type() != LexemType::semicolon) {
+		syntaxError("expected ; at IOp");
+	}
+	auto p = _symbolTable.checkVar(scope, name);
+	generateAtom(scope, std::make_shared<InAtom>(InAtom(p)));
+	return;
+}
+
+
+void Translator::OOp(Scope scope) {														// Правило 51.2
+	getNextLexem();
+	if (_currentLexem.type() != LexemType::kwout) {
+		syntaxError("expected out at OOp");
+	}
+	OOp_(scope);
+	if (_currentLexem.type() != LexemType::semicolon) {
+		syntaxError("expected ; at OOp");
+	}
+	return;
+}
+
+
+void Translator::OOp_(Scope scope) {
+	getNextLexem();																		// Правило 52.2
+	if (_currentLexem.type() == LexemType::opnot || _currentLexem.type() == LexemType::lpar || _currentLexem.type() == LexemType::num
+		|| _currentLexem.type() == LexemType::chr || _currentLexem.type() == LexemType::opinc || _currentLexem.type() == LexemType::id) {
+		auto p = E(scope);
+		generateAtom(scope, std::make_shared<OutAtom>(OutAtom(p)));
+		return;
+	}
+	if (_currentLexem.type() == LexemType::str) {										// Правило 53.2
+		auto s = _stringTable.add(_currentLexem.str());
+		generateAtom(scope, std::make_shared<OutAtom>(OutAtom(s)));
+		return;
+	}
 }

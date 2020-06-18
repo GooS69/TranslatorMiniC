@@ -27,6 +27,7 @@ static std::map<std::string, LexemType> keywords
 	{"else",   LexemType::kwelse},
 	{"switch", LexemType::kwswitch},
 	{"case",   LexemType::kwcase},
+	{"default",LexemType::kwdefault},
 	{"while",  LexemType::kwwhile},
 	{"for",    LexemType::kwfor},
 	{"in",     LexemType::kwin},

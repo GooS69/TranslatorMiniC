@@ -53,6 +53,23 @@ protected:
 	int ParamList(Scope scope);
 	int ParamList_(Scope scope);
 	void StmtList(Scope scope);
+	void Stmt(Scope scope);
+	void AssignOrCallOp(Scope scope);
+	void AssignOrCall(Scope scope);
+	void AssignOrCall_(Scope scope, std::string p);
+	void WhileOp(Scope scope);
+	void ForOp(Scope scope);
+	void ForInit(Scope scope);
+	std::shared_ptr<RValue> ForExp(Scope scope);
+	void ForLoop(Scope scope);
+	void IfOp(Scope scope);
+	void ElsePart(Scope scope);
+	void IOp(Scope scope);
+	void OOp(Scope scope);
+	void OOp_(Scope scope);
+	//void SwitchOp(Scope scope);
+	//void Cases(Scope scope, std::shared_ptr<RValue> p, std::shared_ptr<LabelOperand> end);
+	//std::shared_ptr<LabelOperand> ACase(Scope scope,std::shared_ptr<RValue> p, std::shared_ptr<LabelOperand> end);
 
 public:
 	Translator(std::istream& is);
