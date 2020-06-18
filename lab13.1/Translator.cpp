@@ -711,7 +711,17 @@ void Translator::Stmt(Scope scope) {
 		DeclareStmt(scope);
 		return;
 	}
+	if (_currentLexem.type() == LexemType::semicolon) {						// Правило 27.2
+		return;
+	}
+	if (scope == -1) {
+		syntaxError("operator should be inside function");
+	}
+
 	if (_currentLexem.type() == LexemType::id) {							// Правило 18.2
+		if (scope == -1) {
+		
+		}
 		_epsilonFlag = true;
 		AssignOrCallOp(scope);
 		return;
@@ -768,11 +778,6 @@ void Translator::Stmt(Scope scope) {
 		}
 		return;
 	}
-
-	if (_currentLexem.type() == LexemType::semicolon) {						// Правило 27.2
-		return;
-	}
-
 
 }
 
