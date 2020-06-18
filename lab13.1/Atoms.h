@@ -53,6 +53,7 @@ protected:
 	int _labelID;
 public: 
 	LabelOperand(int labelID);
+	bool operator >=(const std::shared_ptr<LabelOperand>& label);
 	std::string toString() const override;
 };
 

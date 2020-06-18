@@ -67,9 +67,10 @@ protected:
 	void IOp(Scope scope);
 	void OOp(Scope scope);
 	void OOp_(Scope scope);
-	//void SwitchOp(Scope scope);
-	//void Cases(Scope scope, std::shared_ptr<RValue> p, std::shared_ptr<LabelOperand> end);
-	//std::shared_ptr<LabelOperand> ACase(Scope scope,std::shared_ptr<RValue> p, std::shared_ptr<LabelOperand> end);
+	void SwitchOp(Scope scope);
+	void Cases(Scope scope, std::shared_ptr<RValue> p, std::shared_ptr<LabelOperand> end);
+	std::shared_ptr<LabelOperand> ACase(Scope scope,std::shared_ptr<RValue> p, std::shared_ptr<LabelOperand> end);
+	void Cases_(Scope scope, std::shared_ptr<RValue> p, std::shared_ptr<LabelOperand> end, std::shared_ptr<LabelOperand> def);
 
 public:
 	Translator(std::istream& is);

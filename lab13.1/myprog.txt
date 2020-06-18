@@ -1,23 +1,8 @@
-int sqRoots(int x, int y, int z){
-	int result;
-	result = y*y - 4*x*z;
-	if (result < 0){
-		out "No real roots\n";
-	} else {
-	if (result == 0){
-		out "One root\n";
-	}
-	else{
-		out "Two roots\n";
-	}
-	}
-	return result;
-}
 int main(){
-	int a, b, c, d;
-	in a;
-	in b;
-	in c;
-	d = sqRoots(a, b, c);
-	return 0;
+	int a;
+	a = 3;
+	switch(a){
+	default:
+	a = a + 5;
+	}
 }

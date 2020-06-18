@@ -44,6 +44,11 @@ LabelOperand::LabelOperand(int labelID) {
 }
 
 
+bool LabelOperand::operator >=(const std::shared_ptr<LabelOperand>& label) {
+	return _labelID >= label->_labelID;
+}
+
+
 std::string LabelOperand::toString() const {
 	return std::to_string(_labelID);
 }
