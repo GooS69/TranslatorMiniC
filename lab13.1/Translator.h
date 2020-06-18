@@ -74,6 +74,7 @@ protected:
 public:
 	Translator(std::istream& is);
 	void startTranslate();
+	void startTranslate_withoutTable();
 	void getNextLexem();
 	void printAtoms(std::ostream& stream);
 	void printSymbolTable(std::ostream& stream);

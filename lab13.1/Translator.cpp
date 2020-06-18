@@ -26,6 +26,12 @@ void Translator::startTranslate() {
 	_symbolTable.print(std::cout);
 }
 
+void Translator::startTranslate_withoutTable() {
+	StmtList(GlobalScope);
+	//if (_currentLexem.type() != LexemType::eof) {
+	//	syntaxError("expected operation(there are still tokens)");
+	//}
+}
 
 void Translator::getNextLexem() {
 	if (_epsilonFlag) {
