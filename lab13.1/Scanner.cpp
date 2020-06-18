@@ -64,7 +64,7 @@ Token Scanner::getNextToken() {
 				Token out(punctuation.find(currentCharacter)->second);
 				return out;
 			}
-			else if (currentCharacter == ' ' || currentCharacter == '\n') {
+			else if (currentCharacter == ' ' || currentCharacter == '\n' || currentCharacter == '\t') {
 				continue;
 			}
 			else if (currentCharacter == '\'') {
