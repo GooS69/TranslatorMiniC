@@ -76,6 +76,7 @@ std::shared_ptr<MemoryOperand> SymbolTable::checkVar(const Scope scope, const st
 			return std::make_shared<MemoryOperand>(MemoryOperand(i, this));
 		}
 	}
+	std::cout << "******";
 	return nullptr;
 }
 

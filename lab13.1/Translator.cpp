@@ -92,7 +92,7 @@ void Translator::lexicalError(const std::string& message) {
 
 
 std::shared_ptr<RValue> Translator::E(Scope scope) {								// Правило 1.1
-	//std::cout << "E";
+	std::cout << "E";
 	auto q = E7(scope);
 	if (!q) {
 		syntaxError("E7 at E return nullptr");
@@ -507,6 +507,7 @@ std::shared_ptr<RValue> Translator::E1_(Scope scope, std::string p) {				// Прав
 
 
 int Translator::ArgList(Scope scope) {
+	std::cout << "Arglist ";
 	getNextLexem();
 	_epsilonFlag = true;												// Правило 32.1
 	if (_currentLexem.type() == LexemType::opnot || _currentLexem.type() == LexemType::lpar || _currentLexem.type() == LexemType::num
@@ -515,7 +516,7 @@ int Translator::ArgList(Scope scope) {
 		if (!p) {
 			syntaxError("E at ArgList return nullptr");
 		}
-		int m = ParamList_(scope);
+		int m = ArgList_(scope);
 		generateAtom(scope, std::make_shared<ParamAtom>(ParamAtom(p)));
 		return ++m;
 	}
@@ -524,6 +525,7 @@ int Translator::ArgList(Scope scope) {
 
 
 int Translator::ArgList_(Scope scope) {
+	std::cout << "Arglist_ ";
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::comma) {						// Правило 34.1
 		auto p = E(scope);
@@ -700,7 +702,8 @@ void Translator::StmtList(Scope scope) {
 		_currentLexem.type() == LexemType::id || _currentLexem.type() == LexemType::kwwhile ||
 		_currentLexem.type() == LexemType::kwfor || _currentLexem.type() == LexemType::kwif ||
 		_currentLexem.type() == LexemType::lbrace || _currentLexem.type() == LexemType::kwin ||
-		_currentLexem.type() == LexemType::kwreturn || _currentLexem.type() == LexemType::semicolon) {
+		_currentLexem.type() == LexemType::kwreturn || _currentLexem.type() == LexemType::semicolon ||
+		_currentLexem.type() == LexemType::kwout) {
 		Stmt(scope);														// Правило 15.2							
 		StmtList(scope);
 	}
@@ -1051,7 +1054,8 @@ void Translator::ElsePart(Scope scope) {
 //}
 
 
-void Translator::IOp(Scope scope) {														// Правило 50.2
+void Translator::IOp(Scope scope) {	
+	std::cout << "IOp ";																	// Правило 50.2
 	getNextLexem();
 	if (_currentLexem.type() != LexemType::kwin) {
 		syntaxError("expected in at IOp");
@@ -1071,12 +1075,14 @@ void Translator::IOp(Scope scope) {														// Правило 50.2
 }
 
 
-void Translator::OOp(Scope scope) {														// Правило 51.2
+void Translator::OOp(Scope scope) {	
+	std::cout << "OOp ";																// Правило 51.2
 	getNextLexem();
 	if (_currentLexem.type() != LexemType::kwout) {
 		syntaxError("expected out at OOp");
 	}
 	OOp_(scope);
+	getNextLexem();
 	if (_currentLexem.type() != LexemType::semicolon) {
 		syntaxError("expected ; at OOp");
 	}
@@ -1085,9 +1091,11 @@ void Translator::OOp(Scope scope) {														// Правило 51.2
 
 
 void Translator::OOp_(Scope scope) {
+	std::cout << "OOp_ ";
 	getNextLexem();																		// Правило 52.2
 	if (_currentLexem.type() == LexemType::opnot || _currentLexem.type() == LexemType::lpar || _currentLexem.type() == LexemType::num
 		|| _currentLexem.type() == LexemType::chr || _currentLexem.type() == LexemType::opinc || _currentLexem.type() == LexemType::id) {
+		_epsilonFlag = true;
 		auto p = E(scope);
 		generateAtom(scope, std::make_shared<OutAtom>(OutAtom(p)));
 		return;

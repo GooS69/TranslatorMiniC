@@ -600,13 +600,13 @@ TEST(grammar_tests, char_) {
 }
 
 TEST(grammar_tests, inc_a_left) {
-	std::istringstream s_in("int a;\na = ++a;");
+	std::istringstream s_in("int main(){int a;\na = ++a;}");
 	std::ostringstream s_out;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (ADD, 0, '1', 0)\n-1 (MOV, 0,, 0)\n");
+		EXPECT_EQ(s_out.str(), "0 (ADD, 1, '1', 1)\n0 (MOV, 1,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		EXPECT_EQ(exception.what(), "");
@@ -614,13 +614,13 @@ TEST(grammar_tests, inc_a_left) {
 }
 
 TEST(grammar_tests, inc_a_right) {
-	std::istringstream s_in("int a;\na = a++;");
+	std::istringstream s_in("int main(){int a;\na = a++;}");
 	std::ostringstream s_out;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (MOV, 0,, 1)\n-1 (ADD, 0, '1', 0)\n-1 (MOV, 1,, 0)\n");
+		EXPECT_EQ(s_out.str(), "0 (MOV, 1,, 2)\n0 (ADD, 1, '1', 1)\n0 (MOV, 2,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		EXPECT_EQ(exception.what(), "");
@@ -628,7 +628,7 @@ TEST(grammar_tests, inc_a_right) {
 }
 
 TEST(grammar_tests, inc_a_left_without_id) {
-	std::istringstream s_in("int a;\na = ++");
+	std::istringstream s_in("int main(){int a;\na = ++}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
@@ -676,14 +676,14 @@ TEST(grammar_tests, inc_int_right) {
 }
 
 TEST(grammar_tests, NOT_a) {
-	std::istringstream s_in("int a;\na = !a;");
+	std::istringstream s_in("int main(){int a;\na = !a;}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (NOT, 0,, 1)\n-1 (MOV, 1,, 0)\n");
+		EXPECT_EQ(s_out.str(), "0 (NOT, 1,, 2)\n0 (MOV, 2,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -708,14 +708,14 @@ TEST(grammar_tests, NOT_a_without_exp) {
 }
 
 TEST(grammar_tests, MUL_a_a) {
-	std::istringstream s_in("int a;\n a = a*a;");
+	std::istringstream s_in("int main(){int a;\n a = a*a;}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (MUL, 0, 0, 1)\n-1 (MOV, 1,, 0)\n");
+		EXPECT_EQ(s_out.str(), "0 (MUL, 1, 1, 2)\n0 (MOV, 2,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -724,14 +724,14 @@ TEST(grammar_tests, MUL_a_a) {
 }
 
 TEST(grammar_tests, MUL_a_b) {
-	std::istringstream s_in("int a;\nint b;\nint c;\nc = a*b;");
+	std::istringstream s_in("int main(){int a;\nint b;\nint c;\nc = a*b;}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (MUL, 0, 1, 3)\n-1 (MOV, 3,, 2)\n");
+		EXPECT_EQ(s_out.str(), "0 (MUL, 1, 2, 4)\n0 (MOV, 4,, 3)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -740,14 +740,14 @@ TEST(grammar_tests, MUL_a_b) {
 }
 
 TEST(grammar_tests, MUL_a_int) {
-	std::istringstream s_in("int a;\na = a*2;");
+	std::istringstream s_in("int main(){int a;\na = a*2;}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (MUL, 0, '2', 1)\n-1 (MOV, 1,, 0)\n");
+		EXPECT_EQ(s_out.str(), "0 (MUL, 1, '2', 2)\n0 (MOV, 2,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -756,14 +756,14 @@ TEST(grammar_tests, MUL_a_int) {
 }
 
 TEST(grammar_tests, MUL_int_a) {
-	std::istringstream s_in("int a;\na = 3*a;");
+	std::istringstream s_in("int main(){int a;\na = 3*a;}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (MUL, '3', 0, 1)\n-1 (MOV, 1,, 0)\n");
+		EXPECT_EQ(s_out.str(), "0 (MUL, '3', 1, 2)\n0 (MOV, 2,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -772,7 +772,7 @@ TEST(grammar_tests, MUL_int_a) {
 }
 
 TEST(grammar_tests, MUL_a_without_exp_right) {
-	std::istringstream s_in("int a;\na = a*;");
+	std::istringstream s_in("int main(){int a;\na = a*;}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
@@ -788,7 +788,7 @@ TEST(grammar_tests, MUL_a_without_exp_right) {
 }
 
 TEST(grammar_tests, MUL_a_without_exp_left) {
-	std::istringstream s_in("int a;\na= *a;");
+	std::istringstream s_in("int main(){int a;\na= *a;}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
@@ -804,14 +804,14 @@ TEST(grammar_tests, MUL_a_without_exp_left) {
 }
 
 TEST(grammar_tests, SUB_a_a) {
-	std::istringstream s_in("int a;\na = a - a;");
+	std::istringstream s_in("int main(){int a;\na = a - a;}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (SUB, 0, 0, 1)\n-1 (MOV, 1,, 0)\n");
+		EXPECT_EQ(s_out.str(), "0 (SUB, 1, 1, 2)\n0 (MOV, 2,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -819,14 +819,14 @@ TEST(grammar_tests, SUB_a_a) {
 	}
 }
 TEST(grammar_tests, SUB_a_b) {
-	std::istringstream s_in("int a;\nint b;\nint c;\nc = a - b;");
+	std::istringstream s_in("int main(){int a;\nint b;\nint c;\nc = a - b;}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (SUB, 0, 1, 3)\n-1 (MOV, 3,, 2)\n");
+		EXPECT_EQ(s_out.str(), "0 (SUB, 1, 2, 4)\n0 (MOV, 4,, 3)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -835,14 +835,14 @@ TEST(grammar_tests, SUB_a_b) {
 }
 
 TEST(grammar_tests, SUB_a_int) {
-	std::istringstream s_in("int a;\na = a - 2;");
+	std::istringstream s_in("int main(){int a;\na = a - 2;}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (SUB, 0, '2', 1)\n-1 (MOV, 1,, 0)\n");
+		EXPECT_EQ(s_out.str(), "0 (SUB, 1, '2', 2)\n0 (MOV, 2,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -851,14 +851,14 @@ TEST(grammar_tests, SUB_a_int) {
 }
 
 TEST(grammar_tests, SUB_int_a) {
-	std::istringstream s_in("int W;\nW = 228 - W;");
+	std::istringstream s_in("int main(){int W;\nW = 228 - W;}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (SUB, '228', 0, 1)\n-1 (MOV, 1,, 0)\n");
+		EXPECT_EQ(s_out.str(), "0 (SUB, '228', 1, 2)\n0 (MOV, 2,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -894,18 +894,18 @@ TEST(grammar_tests, SUB_a_without_exp_right) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected = ( at AssignOrCall_");
+		EXPECT_EQ(s_out2.str(), "operator should be inside function");
 	}
 }
 TEST(grammar_tests, ADD_a_a) {
-	std::istringstream s_in("int a;\na = a+a;");
+	std::istringstream s_in("int main(){int a;\na = a+a;}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (ADD, 0, 0, 1)\n-1 (MOV, 1,, 0)\n");
+		EXPECT_EQ(s_out.str(), "0 (ADD, 1, 1, 2)\n0 (MOV, 2,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -914,14 +914,14 @@ TEST(grammar_tests, ADD_a_a) {
 }
 
 TEST(grammar_tests, ADD_a_b) {
-	std::istringstream s_in("int a;\nint b;\nint c;\nc = a+b;");
+	std::istringstream s_in("int main(){int a;\nint b;\nint c;\nc = a+b;}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (ADD, 0, 1, 3)\n-1 (MOV, 3,, 2)\n");
+		EXPECT_EQ(s_out.str(), "0 (ADD, 1, 2, 4)\n0 (MOV, 4,, 3)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -930,14 +930,14 @@ TEST(grammar_tests, ADD_a_b) {
 }
 
 TEST(grammar_tests, ADD_a_int) {
-	std::istringstream s_in("int a;\na=a+25565;");
+	std::istringstream s_in("int main(){int a;\na=a+25565;}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (ADD, 0, '25565', 1)\n-1 (MOV, 1,, 0)\n");
+		EXPECT_EQ(s_out.str(), "0 (ADD, 1, '25565', 2)\n0 (MOV, 2,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -946,14 +946,14 @@ TEST(grammar_tests, ADD_a_int) {
 }
 
 TEST(grammar_tests, ADD_int_a) {
-	std::istringstream s_in("int a;\na=322+a;");
+	std::istringstream s_in("int main(){int a;\na=322+a;}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (ADD, '322', 0, 1)\n-1 (MOV, 1,, 0)\n");
+		EXPECT_EQ(s_out.str(), "0 (ADD, '322', 1, 2)\n0 (MOV, 2,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -994,14 +994,14 @@ TEST(grammar_tests, ADD_a_witout_exp_left) {
 }
 
 TEST(grammar_tests, EQ_a_a) {
-	std::istringstream s_in("int a;\nwhile(a==a){};");
+	std::istringstream s_in("int main(){int a;\nwhile(a==a){};}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (LBL,,, 0)\n-1 (MOV, '1',, 1)\n-1 (EQ, 0, 0, 2)\n-1 (MOV, '0',, 1)\n-1 (LBL,,, 2)\n-1 (EQ, 1, '0', 1)\n-1 (JMP,,, 0)\n-1 (LBL,,, 1)\n");
+		EXPECT_EQ(s_out.str(), "0 (LBL,,, 0)\n0 (MOV, '1',, 2)\n0 (EQ, 1, 1, 2)\n0 (MOV, '0',, 2)\n0 (LBL,,, 2)\n0 (EQ, 2, '0', 1)\n0 (JMP,,, 0)\n0 (LBL,,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -1010,14 +1010,14 @@ TEST(grammar_tests, EQ_a_a) {
 }
 
 TEST(grammar_tests, EQ_a_int) {
-	std::istringstream s_in("int a;\nwhile(a==69){};");
+	std::istringstream s_in("int main(){int a;\nwhile(a==69){};}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (LBL,,, 0)\n-1 (MOV, '1',, 1)\n-1 (EQ, 0, '69', 2)\n-1 (MOV, '0',, 1)\n-1 (LBL,,, 2)\n-1 (EQ, 1, '0', 1)\n-1 (JMP,,, 0)\n-1 (LBL,,, 1)\n");
+		EXPECT_EQ(s_out.str(), "0 (LBL,,, 0)\n0 (MOV, '1',, 2)\n0 (EQ, 1, '69', 2)\n0 (MOV, '0',, 2)\n0 (LBL,,, 2)\n0 (EQ, 2, '0', 1)\n0 (JMP,,, 0)\n0 (LBL,,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -1026,14 +1026,14 @@ TEST(grammar_tests, EQ_a_int) {
 }
 
 TEST(grammar_tests, EQ_int_a) {
-	std::istringstream s_in("int a;\nwhile(14==a){};");
+	std::istringstream s_in("int main(){int a;\nwhile(14==a){};}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (LBL,,, 0)\n-1 (MOV, '1',, 1)\n-1 (EQ, '14', 0, 2)\n-1 (MOV, '0',, 1)\n-1 (LBL,,, 2)\n-1 (EQ, 1, '0', 1)\n-1 (JMP,,, 0)\n-1 (LBL,,, 1)\n");
+		EXPECT_EQ(s_out.str(), "0 (LBL,,, 0)\n0 (MOV, '1',, 2)\n0 (EQ, '14', 1, 2)\n0 (MOV, '0',, 2)\n0 (LBL,,, 2)\n0 (EQ, 2, '0', 1)\n0 (JMP,,, 0)\n0 (LBL,,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -1042,14 +1042,14 @@ TEST(grammar_tests, EQ_int_a) {
 }
 
 TEST(grammar_tests, EQ_int_int) {
-	std::istringstream s_in("while(14==18){};");
+	std::istringstream s_in("int main(){while(14==18){};}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (LBL,,, 0)\n-1 (MOV, '1',, 0)\n-1 (EQ, '14', '18', 2)\n-1 (MOV, '0',, 0)\n-1 (LBL,,, 2)\n-1 (EQ, 0, '0', 1)\n-1 (JMP,,, 0)\n-1 (LBL,,, 1)\n");
+		EXPECT_EQ(s_out.str(), "0 (LBL,,, 0)\n0 (MOV, '1',, 1)\n0 (EQ, '14', '18', 2)\n0 (MOV, '0',, 1)\n0 (LBL,,, 2)\n0 (EQ, 1, '0', 1)\n0 (JMP,,, 0)\n0 (LBL,,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -1069,7 +1069,7 @@ TEST(grammar_tests, EQ_a_without_exp_left) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected ( num char ++ id at E1");
+		EXPECT_EQ(s_out2.str(), "operator should be inside function");
 	}
 }
 
@@ -1085,7 +1085,7 @@ TEST(grammar_tests, EQ_a_without_exp_right) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected = ( at AssignOrCall_");
+		EXPECT_EQ(s_out2.str(), "operator should be inside function");
 	}
 }
 
@@ -1122,14 +1122,14 @@ TEST(grammar_tests, EQ_int_without_exp_right) {
 }
 
 TEST(grammar_tests, NE_a_a) {
-	std::istringstream s_in("int a;\nwhile(a!=a){};");
+	std::istringstream s_in("int main(){int a;\nwhile(a!=a){};}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (LBL,,, 0)\n-1 (MOV, '1',, 1)\n-1 (NE, 0, 0, 2)\n-1 (MOV, '0',, 1)\n-1 (LBL,,, 2)\n-1 (EQ, 1, '0', 1)\n-1 (JMP,,, 0)\n-1 (LBL,,, 1)\n");
+		EXPECT_EQ(s_out.str(), "0 (LBL,,, 0)\n0 (MOV, '1',, 2)\n0 (NE, 1, 1, 2)\n0 (MOV, '0',, 2)\n0 (LBL,,, 2)\n0 (EQ, 2, '0', 1)\n0 (JMP,,, 0)\n0 (LBL,,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -1138,14 +1138,14 @@ TEST(grammar_tests, NE_a_a) {
 }
 
 TEST(grammar_tests, NE_a_int) {
-	std::istringstream s_in("int a;\nwhile(a!=69){};");
+	std::istringstream s_in("int main(){int a;\nwhile(a!=69){};}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (LBL,,, 0)\n-1 (MOV, '1',, 1)\n-1 (NE, 0, '69', 2)\n-1 (MOV, '0',, 1)\n-1 (LBL,,, 2)\n-1 (EQ, 1, '0', 1)\n-1 (JMP,,, 0)\n-1 (LBL,,, 1)\n");
+		EXPECT_EQ(s_out.str(), "0 (LBL,,, 0)\n0 (MOV, '1',, 2)\n0 (NE, 1, '69', 2)\n0 (MOV, '0',, 2)\n0 (LBL,,, 2)\n0 (EQ, 2, '0', 1)\n0 (JMP,,, 0)\n0 (LBL,,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -1154,14 +1154,14 @@ TEST(grammar_tests, NE_a_int) {
 }
 
 TEST(grammar_tests, NE_int_a) {
-	std::istringstream s_in("int a;\nwhile(14!=a){};");
+	std::istringstream s_in("int main(){int a;\nwhile(14!=a){};}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (LBL,,, 0)\n-1 (MOV, '1',, 1)\n-1 (NE, '14', 0, 2)\n-1 (MOV, '0',, 1)\n-1 (LBL,,, 2)\n-1 (EQ, 1, '0', 1)\n-1 (JMP,,, 0)\n-1 (LBL,,, 1)\n");
+		EXPECT_EQ(s_out.str(), "0 (LBL,,, 0)\n0 (MOV, '1',, 2)\n0 (NE, '14', 1, 2)\n0 (MOV, '0',, 2)\n0 (LBL,,, 2)\n0 (EQ, 2, '0', 1)\n0 (JMP,,, 0)\n0 (LBL,,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -1170,14 +1170,14 @@ TEST(grammar_tests, NE_int_a) {
 }
 
 TEST(grammar_tests, NE_int_int) {
-	std::istringstream s_in("while(14!=18){};");
+	std::istringstream s_in("int main(){while(14!=18){};}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (LBL,,, 0)\n-1 (MOV, '1',, 0)\n-1 (NE, '14', '18', 2)\n-1 (MOV, '0',, 0)\n-1 (LBL,,, 2)\n-1 (EQ, 0, '0', 1)\n-1 (JMP,,, 0)\n-1 (LBL,,, 1)\n");
+		EXPECT_EQ(s_out.str(), "0 (LBL,,, 0)\n0 (MOV, '1',, 1)\n0 (NE, '14', '18', 2)\n0 (MOV, '0',, 1)\n0 (LBL,,, 2)\n0 (EQ, 1, '0', 1)\n0 (JMP,,, 0)\n0 (LBL,,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -1213,7 +1213,7 @@ TEST(grammar_tests, NE_a_without_exp_right) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected = ( at AssignOrCall_");
+		EXPECT_EQ(s_out2.str(), "operator should be inside function");
 	}
 }
 
@@ -1250,14 +1250,14 @@ TEST(grammar_tests, NE_int_without_exp_right) {
 }
 
 TEST(grammar_tests, GT_a_a) {
-	std::istringstream s_in("int a;\nwhile(a>a){};");
+	std::istringstream s_in("int main(){int a;\nwhile(a>a){};}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (LBL,,, 0)\n-1 (MOV, '1',, 1)\n-1 (GT, 0, 0, 2)\n-1 (MOV, '0',, 1)\n-1 (LBL,,, 2)\n-1 (EQ, 1, '0', 1)\n-1 (JMP,,, 0)\n-1 (LBL,,, 1)\n");
+		EXPECT_EQ(s_out.str(), "0 (LBL,,, 0)\n0 (MOV, '1',, 2)\n0 (GT, 1, 1, 2)\n0 (MOV, '0',, 2)\n0 (LBL,,, 2)\n0 (EQ, 2, '0', 1)\n0 (JMP,,, 0)\n0 (LBL,,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -1266,14 +1266,14 @@ TEST(grammar_tests, GT_a_a) {
 }
 
 TEST(grammar_tests, GT_a_int) {
-	std::istringstream s_in("int a;\nwhile(a>69){};");
+	std::istringstream s_in("int main(){int a;\nwhile(a>69){};}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (LBL,,, 0)\n-1 (MOV, '1',, 1)\n-1 (GT, 0, '69', 2)\n-1 (MOV, '0',, 1)\n-1 (LBL,,, 2)\n-1 (EQ, 1, '0', 1)\n-1 (JMP,,, 0)\n-1 (LBL,,, 1)\n");
+		EXPECT_EQ(s_out.str(), "0 (LBL,,, 0)\n0 (MOV, '1',, 2)\n0 (GT, 1, '69', 2)\n0 (MOV, '0',, 2)\n0 (LBL,,, 2)\n0 (EQ, 2, '0', 1)\n0 (JMP,,, 0)\n0 (LBL,,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -1282,14 +1282,14 @@ TEST(grammar_tests, GT_a_int) {
 }
 
 TEST(grammar_tests, GT_int_a) {
-	std::istringstream s_in("int a;\nwhile(14>a){};");
+	std::istringstream s_in("int main(){int a;\nwhile(14>a){};}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (LBL,,, 0)\n-1 (MOV, '1',, 1)\n-1 (GT, '14', 0, 2)\n-1 (MOV, '0',, 1)\n-1 (LBL,,, 2)\n-1 (EQ, 1, '0', 1)\n-1 (JMP,,, 0)\n-1 (LBL,,, 1)\n");
+		EXPECT_EQ(s_out.str(), "0 (LBL,,, 0)\n0 (MOV, '1',, 2)\n0 (GT, '14', 1, 2)\n0 (MOV, '0',, 2)\n0 (LBL,,, 2)\n0 (EQ, 2, '0', 1)\n0 (JMP,,, 0)\n0 (LBL,,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -1298,14 +1298,14 @@ TEST(grammar_tests, GT_int_a) {
 }
 
 TEST(grammar_tests, GT_int_int) {
-	std::istringstream s_in("while(14>18){};");
+	std::istringstream s_in("int main(){while(14>18){};}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (LBL,,, 0)\n-1 (MOV, '1',, 0)\n-1 (GT, '14', '18', 2)\n-1 (MOV, '0',, 0)\n-1 (LBL,,, 2)\n-1 (EQ, 0, '0', 1)\n-1 (JMP,,, 0)\n-1 (LBL,,, 1)\n");
+		EXPECT_EQ(s_out.str(), "0 (LBL,,, 0)\n0 (MOV, '1',, 1)\n0 (GT, '14', '18', 2)\n0 (MOV, '0',, 1)\n0 (LBL,,, 2)\n0 (EQ, 1, '0', 1)\n0 (JMP,,, 0)\n0 (LBL,,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -1341,7 +1341,7 @@ TEST(grammar_tests, GT_a_without_exp_right) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected = ( at AssignOrCall_");
+		EXPECT_EQ(s_out2.str(), "operator should be inside function");
 	}
 }
 
@@ -1378,14 +1378,14 @@ TEST(grammar_tests, GT_int_without_exp_right) {
 }
 
 TEST(grammar_tests, LT_a_a) {
-	std::istringstream s_in("int a;\nwhile(a<a){};");
+	std::istringstream s_in("int main(){int a;\nwhile(a<a){};}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (LBL,,, 0)\n-1 (MOV, '1',, 1)\n-1 (LT, 0, 0, 2)\n-1 (MOV, '0',, 1)\n-1 (LBL,,, 2)\n-1 (EQ, 1, '0', 1)\n-1 (JMP,,, 0)\n-1 (LBL,,, 1)\n");
+		EXPECT_EQ(s_out.str(), "0 (LBL,,, 0)\n0 (MOV, '1',, 2)\n0 (LT, 1, 1, 2)\n0 (MOV, '0',, 2)\n0 (LBL,,, 2)\n0 (EQ, 2, '0', 1)\n0 (JMP,,, 0)\n0 (LBL,,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -1394,14 +1394,14 @@ TEST(grammar_tests, LT_a_a) {
 }
 
 TEST(grammar_tests, LT_a_int) {
-	std::istringstream s_in("int a;\nwhile(a<69){};");
+	std::istringstream s_in("int main(){int a;\nwhile(a<69){};}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (LBL,,, 0)\n-1 (MOV, '1',, 1)\n-1 (LT, 0, '69', 2)\n-1 (MOV, '0',, 1)\n-1 (LBL,,, 2)\n-1 (EQ, 1, '0', 1)\n-1 (JMP,,, 0)\n-1 (LBL,,, 1)\n");
+		EXPECT_EQ(s_out.str(), "0 (LBL,,, 0)\n0 (MOV, '1',, 2)\n0 (LT, 1, '69', 2)\n0 (MOV, '0',, 2)\n0 (LBL,,, 2)\n0 (EQ, 2, '0', 1)\n0 (JMP,,, 0)\n0 (LBL,,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -1410,14 +1410,14 @@ TEST(grammar_tests, LT_a_int) {
 }
 
 TEST(grammar_tests, LT_int_a) {
-	std::istringstream s_in("int a;\nwhile(14<a){};");
+	std::istringstream s_in("int main(){int a;\nwhile(14<a){};}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (LBL,,, 0)\n-1 (MOV, '1',, 1)\n-1 (LT, '14', 0, 2)\n-1 (MOV, '0',, 1)\n-1 (LBL,,, 2)\n-1 (EQ, 1, '0', 1)\n-1 (JMP,,, 0)\n-1 (LBL,,, 1)\n");
+		EXPECT_EQ(s_out.str(), "0 (LBL,,, 0)\n0 (MOV, '1',, 2)\n0 (LT, '14', 1, 2)\n0 (MOV, '0',, 2)\n0 (LBL,,, 2)\n0 (EQ, 2, '0', 1)\n0 (JMP,,, 0)\n0 (LBL,,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -1426,14 +1426,14 @@ TEST(grammar_tests, LT_int_a) {
 }
 
 TEST(grammar_tests, LT_int_int) {
-	std::istringstream s_in("while(14<18){};");
+	std::istringstream s_in("int main(){while(14<18){};}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (LBL,,, 0)\n-1 (MOV, '1',, 0)\n-1 (LT, '14', '18', 2)\n-1 (MOV, '0',, 0)\n-1 (LBL,,, 2)\n-1 (EQ, 0, '0', 1)\n-1 (JMP,,, 0)\n-1 (LBL,,, 1)\n");
+		EXPECT_EQ(s_out.str(), "0 (LBL,,, 0)\n0 (MOV, '1',, 1)\n0 (LT, '14', '18', 2)\n0 (MOV, '0',, 1)\n0 (LBL,,, 2)\n0 (EQ, 1, '0', 1)\n0 (JMP,,, 0)\n0 (LBL,,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -1469,7 +1469,7 @@ TEST(grammar_tests, LT_a_without_exp_right) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected = ( at AssignOrCall_");
+		EXPECT_EQ(s_out2.str(), "operator should be inside function");
 	}
 }
 
@@ -1506,14 +1506,14 @@ TEST(grammar_tests, LT_int_without_exp_right) {
 }
 
 TEST(grammar_tests, LE_a_a) {
-	std::istringstream s_in("int a;\nwhile(a<=a){};");
+	std::istringstream s_in("int main(){int a;\nwhile(a<=a){};}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (LBL,,, 0)\n-1 (MOV, '1',, 1)\n-1 (LE, 0, 0, 2)\n-1 (MOV, '0',, 1)\n-1 (LBL,,, 2)\n-1 (EQ, 1, '0', 1)\n-1 (JMP,,, 0)\n-1 (LBL,,, 1)\n");
+		EXPECT_EQ(s_out.str(), "0 (LBL,,, 0)\n0 (MOV, '1',, 2)\n0 (LE, 1, 1, 2)\n0 (MOV, '0',, 2)\n0 (LBL,,, 2)\n0 (EQ, 2, '0', 1)\n0 (JMP,,, 0)\n0 (LBL,,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -1522,14 +1522,14 @@ TEST(grammar_tests, LE_a_a) {
 }
 
 TEST(grammar_tests, LE_a_int) {
-	std::istringstream s_in("int a;\nwhile(a<=69){};");
+	std::istringstream s_in("int main(){int a;\nwhile(a<=69){};}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (LBL,,, 0)\n-1 (MOV, '1',, 1)\n-1 (LE, 0, '69', 2)\n-1 (MOV, '0',, 1)\n-1 (LBL,,, 2)\n-1 (EQ, 1, '0', 1)\n-1 (JMP,,, 0)\n-1 (LBL,,, 1)\n");
+		EXPECT_EQ(s_out.str(), "0 (LBL,,, 0)\n0 (MOV, '1',, 2)\n0 (LE, 1, '69', 2)\n0 (MOV, '0',, 2)\n0 (LBL,,, 2)\n0 (EQ, 2, '0', 1)\n0 (JMP,,, 0)\n0 (LBL,,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -1538,14 +1538,14 @@ TEST(grammar_tests, LE_a_int) {
 }
 
 TEST(grammar_tests, LE_int_a) {
-	std::istringstream s_in("int a;\nwhile(14<=a){};");
+	std::istringstream s_in("int main(){int a;\nwhile(14<=a){};}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (LBL,,, 0)\n-1 (MOV, '1',, 1)\n-1 (LE, '14', 0, 2)\n-1 (MOV, '0',, 1)\n-1 (LBL,,, 2)\n-1 (EQ, 1, '0', 1)\n-1 (JMP,,, 0)\n-1 (LBL,,, 1)\n");
+		EXPECT_EQ(s_out.str(), "0 (LBL,,, 0)\n0 (MOV, '1',, 2)\n0 (LE, '14', 1, 2)\n0 (MOV, '0',, 2)\n0 (LBL,,, 2)\n0 (EQ, 2, '0', 1)\n0 (JMP,,, 0)\n0 (LBL,,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -1554,14 +1554,14 @@ TEST(grammar_tests, LE_int_a) {
 }
 
 TEST(grammar_tests, LE_int_int) {
-	std::istringstream s_in("while(14<=18){};");
+	std::istringstream s_in("int main(){while(14<=18){};}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (LBL,,, 0)\n-1 (MOV, '1',, 0)\n-1 (LE, '14', '18', 2)\n-1 (MOV, '0',, 0)\n-1 (LBL,,, 2)\n-1 (EQ, 0, '0', 1)\n-1 (JMP,,, 0)\n-1 (LBL,,, 1)\n");
+		EXPECT_EQ(s_out.str(), "0 (LBL,,, 0)\n0 (MOV, '1',, 1)\n0 (LE, '14', '18', 2)\n0 (MOV, '0',, 1)\n0 (LBL,,, 2)\n0 (EQ, 1, '0', 1)\n0 (JMP,,, 0)\n0 (LBL,,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -1597,7 +1597,7 @@ TEST(grammar_tests, LE_a_without_exp_right) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected = ( at AssignOrCall_");
+		EXPECT_EQ(s_out2.str(), "operator should be inside function");
 	}
 }
 
@@ -1634,14 +1634,14 @@ TEST(grammar_tests, LE_int_without_exp_right) {
 }
 
 TEST(grammar_tests, AND_a_a) {
-	std::istringstream s_in("int a;\nwhile(a&&a){};");
+	std::istringstream s_in("int main(){int a;\nwhile(a&&a){};}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (LBL,,, 0)\n-1 (AND, 0, 0, 1)\n-1 (EQ, 1, '0', 1)\n-1 (JMP,,, 0)\n-1 (LBL,,, 1)\n");
+		EXPECT_EQ(s_out.str(), "0 (LBL,,, 0)\n0 (AND, 1, 1, 2)\n0 (EQ, 2, '0', 1)\n0 (JMP,,, 0)\n0 (LBL,,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -1650,14 +1650,14 @@ TEST(grammar_tests, AND_a_a) {
 }
 
 TEST(grammar_tests, AND_a_int) {
-	std::istringstream s_in("int a;\nwhile(a&&8){};");
+	std::istringstream s_in("int main(){int a;\nwhile(a&&8){};}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (LBL,,, 0)\n-1 (AND, 0, '8', 1)\n-1 (EQ, 1, '0', 1)\n-1 (JMP,,, 0)\n-1 (LBL,,, 1)\n");
+		EXPECT_EQ(s_out.str(), "0 (LBL,,, 0)\n0 (AND, 1, '8', 2)\n0 (EQ, 2, '0', 1)\n0 (JMP,,, 0)\n0 (LBL,,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -1666,14 +1666,14 @@ TEST(grammar_tests, AND_a_int) {
 }
 
 TEST(grammar_tests, AND_int_a) {
-	std::istringstream s_in("int a;\nwhile(256&&a){};");
+	std::istringstream s_in("int main(){int a;\nwhile(256&&a){};}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (LBL,,, 0)\n-1 (AND, '256', 0, 1)\n-1 (EQ, 1, '0', 1)\n-1 (JMP,,, 0)\n-1 (LBL,,, 1)\n");
+		EXPECT_EQ(s_out.str(), "0 (LBL,,, 0)\n0 (AND, '256', 1, 2)\n0 (EQ, 2, '0', 1)\n0 (JMP,,, 0)\n0 (LBL,,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -1682,14 +1682,14 @@ TEST(grammar_tests, AND_int_a) {
 }
 
 TEST(grammar_tests, AND_int_int) {
-	std::istringstream s_in("while(325&&8){};");
+	std::istringstream s_in("int main(){while(325&&8){};}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (LBL,,, 0)\n-1 (AND, '325', '8', 0)\n-1 (EQ, 0, '0', 1)\n-1 (JMP,,, 0)\n-1 (LBL,,, 1)\n");
+		EXPECT_EQ(s_out.str(), "0 (LBL,,, 0)\n0 (AND, '325', '8', 1)\n0 (EQ, 1, '0', 1)\n0 (JMP,,, 0)\n0 (LBL,,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -1725,7 +1725,7 @@ TEST(grammar_tests, AND_a_without_exp_right) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected = ( at AssignOrCall_");
+		EXPECT_EQ(s_out2.str(), "operator should be inside function");
 	}
 }
 
@@ -1762,14 +1762,14 @@ TEST(grammar_tests, AND_int_without_exp_right) {
 }
 
 TEST(grammar_tests, OR_a_a) {
-	std::istringstream s_in("int a;\nwhile(a||a){};");
+	std::istringstream s_in("int main(){int a;\nwhile(a||a){};}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (LBL,,, 0)\n-1 (OR, 0, 0, 1)\n-1 (EQ, 1, '0', 1)\n-1 (JMP,,, 0)\n-1 (LBL,,, 1)\n");
+		EXPECT_EQ(s_out.str(), "0 (LBL,,, 0)\n0 (OR, 1, 1, 2)\n0 (EQ, 2, '0', 1)\n0 (JMP,,, 0)\n0 (LBL,,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -1778,14 +1778,14 @@ TEST(grammar_tests, OR_a_a) {
 }
 
 TEST(grammar_tests, OR_a_int) {
-	std::istringstream s_in("int a;\nwhile(a||8){};");
+	std::istringstream s_in("int main(){int a;\nwhile(a||8){};}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (LBL,,, 0)\n-1 (OR, 0, '8', 1)\n-1 (EQ, 1, '0', 1)\n-1 (JMP,,, 0)\n-1 (LBL,,, 1)\n");
+		EXPECT_EQ(s_out.str(), "0 (LBL,,, 0)\n0 (OR, 1, '8', 2)\n0 (EQ, 2, '0', 1)\n0 (JMP,,, 0)\n0 (LBL,,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -1794,14 +1794,14 @@ TEST(grammar_tests, OR_a_int) {
 }
 
 TEST(grammar_tests, OR_int_a) {
-	std::istringstream s_in("int a;\nwhile(256||a){};");
+	std::istringstream s_in("int main(){int a;\nwhile(256||a){};}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (LBL,,, 0)\n-1 (OR, '256', 0, 1)\n-1 (EQ, 1, '0', 1)\n-1 (JMP,,, 0)\n-1 (LBL,,, 1)\n");
+		EXPECT_EQ(s_out.str(), "0 (LBL,,, 0)\n0 (OR, '256', 1, 2)\n0 (EQ, 2, '0', 1)\n0 (JMP,,, 0)\n0 (LBL,,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -1810,14 +1810,14 @@ TEST(grammar_tests, OR_int_a) {
 }
 
 TEST(grammar_tests, OR_int_int) {
-	std::istringstream s_in("while(325||8){};");
+	std::istringstream s_in("int main(){while(325||8){};}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (LBL,,, 0)\n-1 (OR, '325', '8', 0)\n-1 (EQ, 0, '0', 1)\n-1 (JMP,,, 0)\n-1 (LBL,,, 1)\n");
+		EXPECT_EQ(s_out.str(), "0 (LBL,,, 0)\n0 (OR, '325', '8', 1)\n0 (EQ, 1, '0', 1)\n0 (JMP,,, 0)\n0 (LBL,,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -1853,7 +1853,7 @@ TEST(grammar_tests, OR_a_without_exp_right) {
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
-		EXPECT_EQ(s_out2.str(), "expected = ( at AssignOrCall_");
+		EXPECT_EQ(s_out2.str(), "operator should be inside function");
 	}
 }
 
@@ -1890,14 +1890,14 @@ TEST(grammar_tests, OR_int_without_exp_right) {
 }
 
 TEST(integrat_grammar_tests, one) {
-	std::istringstream s_in("int a;\nint b;\nint c;\nc=a*b - a*a;");
+	std::istringstream s_in("int main(){int a;\nint b;\nint c;\nc=a*b - a*a;}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (MUL, 0, 1, 3)\n-1 (MUL, 0, 0, 4)\n-1 (SUB, 3, 4, 5)\n-1 (MOV, 5,, 2)\n");
+		EXPECT_EQ(s_out.str(), "0 (MUL, 1, 2, 4)\n0 (MUL, 1, 1, 5)\n0 (SUB, 4, 5, 6)\n0 (MOV, 6,, 3)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -1906,14 +1906,14 @@ TEST(integrat_grammar_tests, one) {
 }
 
 TEST(integrat_grammar_tests, second) {
-	std::istringstream s_in("int a;\nint b;\nb=a*25565 - 15;");
+	std::istringstream s_in("int main(){int a;\nint b;\nb=a*25565 - 15;}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (MUL, 0, '25565', 2)\n-1 (SUB, 2, '15', 3)\n-1 (MOV, 3,, 1)\n");
+		EXPECT_EQ(s_out.str(), "0 (MUL, 1, '25565', 3)\n0 (SUB, 3, '15', 4)\n0 (MOV, 4,, 2)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -1922,14 +1922,14 @@ TEST(integrat_grammar_tests, second) {
 }
 
 TEST(integrat_grammar_tests, while_inc) {
-	std::istringstream s_in("int a=0;\nint b=3;\nwhile(a<b){a=a++;};");
+	std::istringstream s_in("int main(){int a=0;\nint b=3;\nwhile(a<b){a=a++;};}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (LBL,,, 0)\n-1 (MOV, '1',, 2)\n-1 (LT, 0, 1, 2)\n-1 (MOV, '0',, 2)\n-1 (LBL,,, 2)\n-1 (EQ, 2, '0', 1)\n-1 (MOV, 0,, 3)\n-1 (ADD, 0, '1', 0)\n-1 (MOV, 3,, 0)\n-1 (JMP,,, 0)\n-1 (LBL,,, 1)\n");
+		EXPECT_EQ(s_out.str(), "0 (LBL,,, 0)\n0 (MOV, '1',, 3)\n0 (LT, 1, 2, 2)\n0 (MOV, '0',, 3)\n0 (LBL,,, 2)\n0 (EQ, 3, '0', 1)\n0 (MOV, 1,, 4)\n0 (ADD, 1, '1', 1)\n0 (MOV, 4,, 1)\n0 (JMP,,, 0)\n0 (LBL,,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -1938,14 +1938,14 @@ TEST(integrat_grammar_tests, while_inc) {
 }
 
 TEST(integrat_grammar_tests, if_inc) {
-	std::istringstream s_in("int a=0;\nint b=3;\nif(a>b){a=a++;};");
+	std::istringstream s_in("int main(){int a=0;\nint b=3;\nif(a>b){a=a++;};}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
 	Translator t = Translator(s_in);
 	try {
 		t.startTranslate_withoutTable();
 		t.printAtoms(s_out);
-		EXPECT_EQ(s_out.str(), "-1 (MOV, '1',, 2)\n-1 (GT, 0, 1, 2)\n-1 (MOV, '0',, 2)\n-1 (LBL,,, 2)\n-1 (EQ, 2, '0', 0)\n-1 (MOV, 0,, 3)\n-1 (ADD, 0, '1', 0)\n-1 (MOV, 3,, 0)\n-1 (JMP,,, 1)\n-1 (LBL,,, 0)\n-1 (LBL,,, 1)\n");
+		EXPECT_EQ(s_out.str(), "0 (MOV, '1',, 3)\n0 (GT, 1, 2, 2)\n0 (MOV, '0',, 3)\n0 (LBL,,, 2)\n0 (EQ, 3, '0', 0)\n0 (MOV, 1,, 4)\n0 (ADD, 1, '1', 1)\n0 (MOV, 4,, 1)\n0 (JMP,,, 1)\n0 (LBL,,, 0)\n0 (LBL,,, 1)\n0 (RET,,, '0')\n");
 	}
 	catch (TranslationException exception) {
 		s_out2 << exception.what();
@@ -1953,21 +1953,85 @@ TEST(integrat_grammar_tests, if_inc) {
 	}
 }
 
-//TEST(integrat_grammar_tests, for_inc) {
-//	std::istringstream s_in("int a=0;\nint b=3;\nint i;\nfor(i = 0a>b){a=a++;};");
-//	std::ostringstream s_out;
-//	std::ostringstream s_out2;
-//	Translator t = Translator(s_in);
-//	try {
-//		t.startTranslate_withoutTable();
-//		t.printAtoms(s_out);
-//		EXPECT_EQ(s_out.str(), "(MUL, 1, '3', 2)\n(ADD, 0, 2, 3)\n(SUB, '4', 0, 4)\n(AND, 3, 4, 5)\n(NOT, 5,, 6)\n");
-//	}
-//	catch (TranslationException exception) {
-//		s_out2 << exception.what();
-//		EXPECT_EQ(s_out2.str(), "");
-//	}
-//}
+TEST(integrat_grammar_tests, for_inc) {
+	std::istringstream s_in("int main(){int a=0;\nint b=3;\nint i;\nfor(i = 0; a<=b; ++i){a=a++;};}");
+	std::ostringstream s_out;
+	std::ostringstream s_out2;
+	Translator t = Translator(s_in);
+	try {
+		t.startTranslate_withoutTable();
+		t.printAtoms(s_out);
+		EXPECT_EQ(s_out.str(), "0 (MOV, '0',, 3)\n0 (LBL,,, 0)\n0 (MOV, '1',, 4)\n0 (LE, 1, 2, 4)\n0 (MOV, '0',, 4)\n0 (LBL,,, 4)\n0 (EQ, 4, '0', 3)\n0 (JMP,,, 2)\n0 (LBL,,, 1)\n0 (ADD, 3, '1', 3)\n0 (JMP,,, 0)\n0 (LBL,,, 2)\n0 (MOV, 1,, 5)\n0 (ADD, 1, '1', 1)\n0 (MOV, 5,, 1)\n0 (JMP,,, 1)\n0 (LBL,,, 3)\n0 (RET,,, '0')\n");
+	}
+	catch (TranslationException exception) {
+		s_out2 << exception.what();
+		EXPECT_EQ(s_out2.str(), "");
+	}
+}
+
+TEST(integrat_grammar_tests, in) {
+	std::istringstream s_in("int main(){int a;\nin a;}");
+	std::ostringstream s_out;
+	std::ostringstream s_out2;
+	Translator t = Translator(s_in);
+	try {
+		t.startTranslate_withoutTable();
+		t.printAtoms(s_out);
+		EXPECT_EQ(s_out.str(), "0 (IN,,, 1)\n0 (RET,,, '0')\n");
+	}
+	catch (TranslationException exception) {
+		s_out2 << exception.what();
+		EXPECT_EQ(s_out2.str(), "");
+	}
+}
+
+TEST(integrat_grammar_tests, out) {
+	std::istringstream s_in("int main(){int a = 10;\nout a;}");
+	std::ostringstream s_out;
+	std::ostringstream s_out2;
+	Translator t = Translator(s_in);
+	try {
+		t.startTranslate_withoutTable();
+		t.printAtoms(s_out);
+		EXPECT_EQ(s_out.str(), "0 (OUT,,, 1)\n0 (RET,,, '0')\n");
+	}
+	catch (TranslationException exception) {
+		s_out2 << exception.what();
+		EXPECT_EQ(s_out2.str(), "");
+	}
+}
+
+TEST(integrat_grammar_tests, IF_1_else_2) {
+	std::istringstream s_in("int main(){int a = 10;\nint b=0;if(a>5){b=1;}\nelse{b=2;}}");
+	std::ostringstream s_out;
+	std::ostringstream s_out2;
+	Translator t = Translator(s_in);
+	try {
+		t.startTranslate_withoutTable();
+		t.printAtoms(s_out);
+		EXPECT_EQ(s_out.str(), "0 (MOV, '1',, 3)\n0 (GT, 1, '5', 2)\n0 (MOV, '0',, 3)\n0 (LBL,,, 2)\n0 (EQ, 3, '0', 0)\n0 (MOV, '1',, 2)\n0 (JMP,,, 1)\n0 (LBL,,, 0)\n0 (MOV, '2',, 2)\n0 (LBL,,, 1)\n0 (RET,,, '0')\n");
+	}
+	catch (TranslationException exception) {
+		s_out2 << exception.what();
+		EXPECT_EQ(s_out2.str(), "");
+	}
+}
+
+TEST(integrat_grammar_tests, if_1_ELSE_2) {
+	std::istringstream s_in("int main(){int a = 10;\nint b=0;\nif(a>15){b=1;}\nelse{b=2;}}");
+	std::ostringstream s_out;
+	std::ostringstream s_out2;
+	Translator t = Translator(s_in);
+	try {
+		t.startTranslate_withoutTable();
+		t.printAtoms(s_out);
+		EXPECT_EQ(s_out.str(), "0 (MOV, '1',, 3)\n0 (GT, 1, '15', 2)\n0 (MOV, '0',, 3)\n0 (LBL,,, 2)\n0 (EQ, 3, '0', 0)\n0 (MOV, '1',, 2)\n0 (JMP,,, 1)\n0 (LBL,,, 0)\n0 (MOV, '2',, 2)\n0 (LBL,,, 1)\n0 (RET,,, '0')\n");
+	}
+	catch (TranslationException exception) {
+		s_out2 << exception.what();
+		EXPECT_EQ(s_out2.str(), "");
+	}
+}
 
 TEST(symboltable, one_a) {
 	SymbolTable table = SymbolTable();
