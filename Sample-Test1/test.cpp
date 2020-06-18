@@ -115,7 +115,8 @@ TEST(op_squarebrackets_stringtab, returning_third_elem_from_5_elems) {
 TEST(add_symboltab, one_elem) {
 	SymbolTable table = SymbolTable();
 	std::string str = "a";
-	EXPECT_EQ(table.add(str)->toString(), "0");
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	EXPECT_EQ(table.addVar(str, 1, type, 0)->toString(), "0");
 	EXPECT_EQ(table[0]._name, "a");
 }
 
@@ -123,8 +124,9 @@ TEST(add_symboltab, two_elem) {
 	SymbolTable table = SymbolTable();
 	std::string str = "a";
 	std::string str2 = "b";
-	EXPECT_EQ(table.add(str)->toString(), "0");
-	EXPECT_EQ(table.add(str2)->toString(), "1");
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	EXPECT_EQ(table.addVar(str, 1, type, 0)->toString(), "0");
+	EXPECT_EQ(table.addVar(str2, 1, type, 0)->toString(), "1");
 	EXPECT_EQ(table[0]._name, "a");
 	EXPECT_EQ(table[1]._name, "b");
 }
@@ -136,27 +138,30 @@ TEST(add_symboltab, five_elem) {
 	std::string str3 = "temp1";
 	std::string str4 = "temp2";
 	std::string str5 = "temp3";
-	EXPECT_EQ(table.add(str)->toString(), "0");
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	EXPECT_EQ(table.addVar(str, 1, type, 0)->toString(), "0");
 	EXPECT_EQ(table[0], str);
-	EXPECT_EQ(table.add(str2)->toString(), "1");
+	EXPECT_EQ(table.addVar(str2, 1, type, 0)->toString(), "1");
 	EXPECT_EQ(table[1], str2);
-	EXPECT_EQ(table.add(str3)->toString(), "2");
+	EXPECT_EQ(table.addVar(str3, 1, type, 0)->toString(), "2");
 	EXPECT_EQ(table[2], str3);
-	EXPECT_EQ(table.add(str4)->toString(), "3");
+	EXPECT_EQ(table.addVar(str4, 1, type, 0)->toString(), "3");
 	EXPECT_EQ(table[3], str4);
-	EXPECT_EQ(table.add(str5)->toString(), "4");
+	EXPECT_EQ(table.addVar(str5, 1, type, 0)->toString(), "4");
 	EXPECT_EQ(table[4], str5);
 }
+
 TEST(add_symboltab, existing_elem_on_pos1) {
 	SymbolTable table = SymbolTable();
 	std::string str = "a";
 	std::string str2 = "b";
 	std::string str3 = "c";
 	std::string str4 = "b";
-	table.add(str);
-	table.add(str2);
-	table.add(str3);
-	EXPECT_EQ(table.add(str4)->toString(), "1");
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto t1 = table.addVar(str, 1, type, 0);
+	auto t2 = table.addVar(str2, 1, type, 0);
+	auto t3 = table.addVar(str3, 1, type, 0);
+	EXPECT_EQ(table.checkVar(1, str4)->toString(), "1");
 	EXPECT_EQ(table[1], str4);
 }
 
@@ -166,10 +171,11 @@ TEST(add_symboltab, existing_elem_on_firstpos) {
 	std::string str2 = "b";
 	std::string str3 = "c";
 	std::string str4 = "a";
-	table.add(str);
-	table.add(str2);
-	table.add(str3);
-	EXPECT_EQ(table.add(str4)->toString(), "0");
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto t1 = table.addVar(str, 1, type, 0);
+	auto t2 = table.addVar(str2, 1, type, 0);
+	auto t3 = table.addVar(str3, 1, type, 0);
+	EXPECT_EQ(table.checkVar(1, str4)->toString(), "0");
 	EXPECT_EQ(table[0], str4);
 }
 
@@ -179,17 +185,19 @@ TEST(add_symboltab, existing_elem_on_lastpos) {
 	std::string str2 = "temp1";
 	std::string str3 = "temp2";
 	std::string str4 = "temp2";
-	table.add(str);
-	table.add(str2);
-	table.add(str3);
-	EXPECT_EQ(table.add(str4)->toString(), "2");
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto t1 = table.addVar(str, 1, type, 0);
+	auto t2 = table.addVar(str2, 1, type, 0);
+	auto t3 = table.addVar(str3, 1, type, 0);
+	EXPECT_EQ(table.checkVar(1, str4)->toString(), "2");
 	EXPECT_EQ(table[2], str4);
 }
 
 TEST(op_squarebrackets_symboltab, returning_first_elem) {
 	SymbolTable table = SymbolTable();
 	std::string str = "a";
-	table.add(str);
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto t1 = table.addVar(str, 1, type, 0);
 	EXPECT_EQ(table[0], str);
 }
 
@@ -200,96 +208,107 @@ TEST(op_squarebrackets_symboltab, returning_third_elem_from_5_elems) {
 	std::string str3 = "c";
 	std::string str4 = "temp1";
 	std::string str5 = "temp2";
-	table.add(str);
-	table.add(str2);
-	table.add(str3);
-	table.add(str4);
-	table.add(str5);
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto t1 = table.addVar(str, 1, type, 0);
+	auto t2 = table.addVar(str2, 1, type, 0);
+	auto t3 = table.addVar(str3, 1, type, 0);
+	auto t4 = table.addVar(str4, 1, type, 0);
+	auto t5 = table.addVar(str5, 1, type, 0);
 	EXPECT_EQ(table[2], str3);
 }
 
 TEST(binary_atoms, ADD) {
 	SymbolTable table = SymbolTable();
-	auto a = table.add("a");
-	auto b = table.add("b");
-	auto result = table.add("res");
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto a = table.addVar("a", 1, type, 0);
+	auto b = table.addVar("b", 1, type, 0);
+	auto result = table.addVar("res", 1, type, 0);
 	BinaryOpAtom add = BinaryOpAtom("ADD", a, b, result);
 	EXPECT_EQ(add.toString(), "(ADD, 0, 1, 2)");
 }
 
 TEST(binary_atoms, SUB) {
 	SymbolTable table = SymbolTable();
-	auto a = table.add("a");
-	auto b = table.add("b");
-	auto result = table.add("res");
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto a = table.addVar("a", 1, type, 0);
+	auto b = table.addVar("b", 1, type, 0);
+	auto result = table.addVar("res", 1, type, 0);
 	BinaryOpAtom bin_atom = BinaryOpAtom("SUB", a, b, result);
 	EXPECT_EQ(bin_atom.toString(), "(SUB, 0, 1, 2)");
 }
 
 TEST(binary_atoms, MUL) {
 	SymbolTable table = SymbolTable();
-	auto a = table.add("a");
-	auto b = table.add("b");
-	auto result = table.add("res");
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto a = table.addVar("a", 1, type, 0);
+	auto b = table.addVar("b", 1, type, 0);
+	auto result = table.addVar("res", 1, type, 0);
 	BinaryOpAtom bin_atom = BinaryOpAtom("MUL", a, b, result);
 	EXPECT_EQ(bin_atom.toString(), "(MUL, 0, 1, 2)");
 }
 
 TEST(binary_atoms, DIV) {
 	SymbolTable table = SymbolTable();
-	auto a = table.add("a");
-	auto b = table.add("b");
-	auto result = table.add("res");
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto a = table.addVar("a", 1, type, 0);
+	auto b = table.addVar("b", 1, type, 0);
+	auto result = table.addVar("res", 1, type, 0);
 	BinaryOpAtom bin_atom = BinaryOpAtom("DIV", a, b, result);
 	EXPECT_EQ(bin_atom.toString(), "(DIV, 0, 1, 2)");
 }
 
 TEST(binary_atoms, AND) {
 	SymbolTable table = SymbolTable();
-	auto a = table.add("a");
-	auto b = table.add("b");
-	auto result = table.add("res");
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto a = table.addVar("a", 1, type, 0);
+	auto b = table.addVar("b", 1, type, 0);
+	auto result = table.addVar("res", 1, type, 0);
 	BinaryOpAtom bin_atom = BinaryOpAtom("AND", a, b, result);
 	EXPECT_EQ(bin_atom.toString(), "(AND, 0, 1, 2)");
 }
 
 TEST(binary_atoms, OR) {
 	SymbolTable table = SymbolTable();
-	auto a = table.add("a");
-	auto b = table.add("b");
-	auto result = table.add("res");
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto a = table.addVar("a", 1, type, 0);
+	auto b = table.addVar("b", 1, type, 0);
+	auto result = table.addVar("res", 1, type, 0);
 	BinaryOpAtom bin_atom = BinaryOpAtom("OR", a, b, result);
 	EXPECT_EQ(bin_atom.toString(), "(OR, 0, 1, 2)");
 }
 
 TEST(unary_atoms, NEG) {
 	SymbolTable table = SymbolTable();
-	auto a = table.add("a");
-	auto result = table.add("res");
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto a = table.addVar("a", 1, type, 0);
+	auto result = table.addVar("res", 1, type, 0);
 	UnaryOpAtom unar_atom = UnaryOpAtom("NEG", a, result);
 	EXPECT_EQ(unar_atom.toString(), "(NEG, 0,, 1)");
 }
 
 TEST(unary_atoms, NOT) {
 	SymbolTable table = SymbolTable();
-	auto a = table.add("a");
-	auto result = table.add("res");
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto a = table.addVar("a", 1, type, 0);
+	auto result = table.addVar("res", 1, type, 0);
 	UnaryOpAtom unar_atom = UnaryOpAtom("NOT", a, result);
 	EXPECT_EQ(unar_atom.toString(), "(NOT, 0,, 1)");
 }
 
 TEST(unary_atoms, MOV) {
 	SymbolTable table = SymbolTable();
-	auto a = table.add("a");
-	auto result = table.add("res");
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto a = table.addVar("a", 1, type, 0);
+	auto result = table.addVar("res", 1, type, 0);
 	UnaryOpAtom unar_atom = UnaryOpAtom("MOV", a, result);
 	EXPECT_EQ(unar_atom.toString(), "(MOV, 0,, 1)");
 }
 
 TEST(conditionaljamp_atoms, EQ) {
 	SymbolTable table = SymbolTable();
-	auto a = table.add("a");
-	auto b = table.add("b");
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto a = table.addVar("a", 1, type, 0);
+	auto b = table.addVar("b", 1, type, 0);
 	std::shared_ptr<LabelOperand> label = std::make_shared<LabelOperand>(LabelOperand(1));
 	ConditionalJumpAtom cond_jamp_atom = ConditionalJumpAtom("EQ", a, b, label);
 	EXPECT_EQ(cond_jamp_atom.toString(), "(EQ, 0, 1, 1)");
@@ -297,8 +316,9 @@ TEST(conditionaljamp_atoms, EQ) {
 
 TEST(conditionaljamp_atoms, NE) {
 	SymbolTable table = SymbolTable();
-	auto a = table.add("a");
-	auto b = table.add("b");
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto a = table.addVar("a", 1, type, 0);
+	auto b = table.addVar("b", 1, type, 0);
 	std::shared_ptr<LabelOperand> label = std::make_shared<LabelOperand>(LabelOperand(1));
 	ConditionalJumpAtom cond_jamp_atom = ConditionalJumpAtom("NE", a, b, label);
 	EXPECT_EQ(cond_jamp_atom.toString(), "(NE, 0, 1, 1)");
@@ -306,8 +326,9 @@ TEST(conditionaljamp_atoms, NE) {
 
 TEST(conditionaljamp_atoms, GT) {
 	SymbolTable table = SymbolTable();
-	auto a = table.add("a");
-	auto b = table.add("b");
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto a = table.addVar("a", 1, type, 0);
+	auto b = table.addVar("b", 1, type, 0);
 	std::shared_ptr<LabelOperand> label = std::make_shared<LabelOperand>(LabelOperand(1));
 	ConditionalJumpAtom cond_jamp_atom = ConditionalJumpAtom("GT", a, b, label);
 	EXPECT_EQ(cond_jamp_atom.toString(), "(GT, 0, 1, 1)");
@@ -315,8 +336,9 @@ TEST(conditionaljamp_atoms, GT) {
 
 TEST(conditionaljamp_atoms, LT) {
 	SymbolTable table = SymbolTable();
-	auto a = table.add("a");
-	auto b = table.add("b");
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto a = table.addVar("a", 1, type, 0);
+	auto b = table.addVar("b", 1, type, 0);
 	std::shared_ptr<LabelOperand> label = std::make_shared<LabelOperand>(LabelOperand(1));
 	ConditionalJumpAtom cond_jamp_atom = ConditionalJumpAtom("LT", a, b, label);
 	EXPECT_EQ(cond_jamp_atom.toString(), "(LT, 0, 1, 1)");
@@ -324,8 +346,9 @@ TEST(conditionaljamp_atoms, LT) {
 
 TEST(conditionaljamp_atoms, GE) {
 	SymbolTable table = SymbolTable();
-	auto a = table.add("a");
-	auto b = table.add("b");
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto a = table.addVar("a", 1, type, 0);
+	auto b = table.addVar("b", 1, type, 0);
 	std::shared_ptr<LabelOperand> label = std::make_shared<LabelOperand>(LabelOperand(1));
 	ConditionalJumpAtom cond_jamp_atom = ConditionalJumpAtom("GE", a, b, label);
 	EXPECT_EQ(cond_jamp_atom.toString(), "(GE, 0, 1, 1)");
@@ -333,8 +356,9 @@ TEST(conditionaljamp_atoms, GE) {
 
 TEST(conditionaljamp_atoms, LE) {
 	SymbolTable table = SymbolTable();
-	auto a = table.add("a");
-	auto b = table.add("b");
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto a = table.addVar("a", 1, type, 0);
+	auto b = table.addVar("b", 1, type, 0);
 	std::shared_ptr<LabelOperand> label = std::make_shared<LabelOperand>(LabelOperand(1));
 	ConditionalJumpAtom cond_jamp_atom = ConditionalJumpAtom("LE", a, b, label);
 	EXPECT_EQ(cond_jamp_atom.toString(), "(LE, 0, 1, 1)");
@@ -348,13 +372,15 @@ TEST(jamp_atoms, JMP) {
 
 TEST(in_atom, IN) {
 	SymbolTable table = SymbolTable();
-	auto input = table.add("input");
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto input = table.addVar("input", 1, type, 0);
 	EXPECT_EQ(InAtom(input).toString(), "(IN,,, 0)");
 }
 
 TEST(out_atom, OUT) {
 	SymbolTable table = SymbolTable();
-	auto result = table.add("res");
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto result = table.addVar("res", 1, type, 0);
 	EXPECT_EQ(OutAtom(result).toString(), "(OUT,,, 0)");
 }
 
@@ -368,10 +394,11 @@ TEST(generate_atoms, bin_atom) {
 	Translator t = Translator(ifile);
 	SymbolTable table = SymbolTable();
 	std::ostringstream ss;
-	auto a = table.add("a");
-	auto b = table.add("b");
-	auto res = table.add("result");
-	t.generateAtom(std::make_shared<BinaryOpAtom>(BinaryOpAtom("ADD", a, b, res)));
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto a = table.addVar("a", 1, type, 0);
+	auto b = table.addVar("b", 1, type, 0);
+	auto res = table.addVar("res", 1, type, 0);
+	t.generateAtom(1, std::make_shared<BinaryOpAtom>(BinaryOpAtom("ADD", a, b, res)));
 	t.printAtoms(ss);
 	EXPECT_EQ(ss.str(), "(ADD, 0, 1, 2)\n");
 }
@@ -381,9 +408,10 @@ TEST(generate_atoms, unary_atom) {
 	Translator t = Translator(ifile);
 	SymbolTable table = SymbolTable();
 	std::ostringstream ss;
-	auto a = table.add("a");
-	auto res = table.add("result");
-	t.generateAtom(std::make_shared<UnaryOpAtom>(UnaryOpAtom("NEG", a, res)));
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto a = table.addVar("a", 1, type, 0);
+	auto res = table.addVar("res", 1, type, 0);
+	t.generateAtom(1, std::make_shared<UnaryOpAtom>(UnaryOpAtom("NEG", a, res)));
 	t.printAtoms(ss);
 	EXPECT_EQ(ss.str(), "(NEG, 0,, 1)\n");
 }
@@ -393,7 +421,7 @@ TEST(generate_atoms, lbl_atom) {
 	Translator t = Translator(ifile);
 	std::ostringstream ss;
 	std::shared_ptr<LabelOperand> label = std::make_shared<LabelOperand>(LabelOperand(1));
-	t.generateAtom(std::make_shared<LabelAtom>(LabelAtom(label)));
+	t.generateAtom(1, std::make_shared<LabelAtom>(LabelAtom(label)));
 	t.printAtoms(ss);
 	EXPECT_EQ(ss.str(), "(LBL,,, 1)\n");
 }
@@ -403,10 +431,11 @@ TEST(generate_atoms, condjump_atom) {
 	Translator t = Translator(ifile);
 	SymbolTable table = SymbolTable();
 	std::ostringstream ss;
-	auto a = table.add("a");
-	auto b = table.add("b");
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto a = table.addVar("a", 1, type, 0);
+	auto b = table.addVar("b", 1, type, 0);
 	std::shared_ptr<LabelOperand> label = std::make_shared<LabelOperand>(LabelOperand(1));
-	t.generateAtom(std::make_shared<ConditionalJumpAtom>(ConditionalJumpAtom("NE", a, b, label)));
+	t.generateAtom(1, std::make_shared<ConditionalJumpAtom>(ConditionalJumpAtom("NE", a, b, label)));
 	t.printAtoms(ss);
 	EXPECT_EQ(ss.str(), "(NE, 0, 1, 1)\n");
 }
@@ -416,8 +445,9 @@ TEST(generate_atoms, in_atom) {
 	Translator t = Translator(ifile);
 	SymbolTable table = SymbolTable();
 	std::ostringstream ss;
-	auto input = table.add("input");
-	t.generateAtom(std::make_shared<InAtom>(InAtom(input)));
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto input = table.addVar("input", 1, type, 0);
+	t.generateAtom(1, std::make_shared<InAtom>(InAtom(input)));
 	t.printAtoms(ss);
 	EXPECT_EQ(ss.str(), "(IN,,, 0)\n");
 }
@@ -427,8 +457,9 @@ TEST(generate_atoms, out_atom) {
 	Translator t = Translator(ifile);
 	SymbolTable table = SymbolTable();
 	std::ostringstream ss;
-	auto res = table.add("result");
-	t.generateAtom(std::make_shared<OutAtom>(OutAtom(res)));
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto res = table.addVar("res", 1, type, 0);
+	t.generateAtom(1, std::make_shared<OutAtom>(OutAtom(res)));
 	t.printAtoms(ss);
 	EXPECT_EQ(ss.str(), "(OUT,,, 0)\n");
 }
@@ -438,10 +469,11 @@ TEST(print_atoms, one_atom) {
 	Translator t = Translator(ifile);
 	SymbolTable table = SymbolTable();
 	std::ostringstream ss;
-	auto a = table.add("a");
-	auto b = table.add("b");
-	auto res = table.add("result");
-	t.generateAtom(std::make_shared<BinaryOpAtom>(BinaryOpAtom("MUL", a, b, res)));
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto a = table.addVar("a", 1, type, 0);
+	auto b = table.addVar("b", 1, type, 0);
+	auto res = table.addVar("res", 1, type, 0);
+	t.generateAtom(1, std::make_shared<BinaryOpAtom>(BinaryOpAtom("MUL", a, b, res)));
 	t.printAtoms(ss);
 	EXPECT_EQ(ss.str(), "(MUL, 0, 1, 2)\n");
 }
@@ -451,44 +483,47 @@ TEST(print_atoms, three_atoms) {
 	Translator t = Translator(ifile);
 	SymbolTable table = SymbolTable();
 	std::ostringstream ss;
-	auto a = table.add("a");
-	auto b = table.add("b");
-	auto res = table.add("result");
-	auto res2 = table.add("result2");
-	auto res3 = table.add("result3");
-	t.generateAtom(std::make_shared<BinaryOpAtom>(BinaryOpAtom("MUL", a, b, res)));
-	t.generateAtom(std::make_shared<UnaryOpAtom>(UnaryOpAtom("NEG", res, res2)));
-	t.generateAtom(std::make_shared<BinaryOpAtom>(BinaryOpAtom("ADD", a, res2, res3)));
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto a = table.addVar("a", 1, type, 0);
+	auto b = table.addVar("b", 1, type, 0);
+	auto res = table.addVar("res", 1, type, 0);
+	auto res2 = table.addVar("res2", 1, type, 0);
+	auto res3 = table.addVar("res3", 1, type, 0);
+	t.generateAtom(1, std::make_shared<BinaryOpAtom>(BinaryOpAtom("MUL", a, b, res)));
+	t.generateAtom(1, std::make_shared<UnaryOpAtom>(UnaryOpAtom("NEG", res, res2)));
+	t.generateAtom(1, std::make_shared<BinaryOpAtom>(BinaryOpAtom("ADD", a, res2, res3)));
 	t.printAtoms(ss);
 	EXPECT_EQ(ss.str(), "(MUL, 0, 1, 2)\n(NEG, 2,, 3)\n(ADD, 0, 3, 4)\n");
 }
 
 TEST(alloc, only_alloc) {
 	SymbolTable table = SymbolTable();
-	auto t = table.alloc();
+	auto t = table.alloc(1);
 	EXPECT_EQ(table[0]._name, "temp0");
 }
 
 TEST(alloc, alloc_after_symb) {
 	SymbolTable table = SymbolTable();
-	auto a = table.add("a");
-	auto t = table.alloc();
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto a = table.addVar("a", 1, type, 0);
+	auto t = table.alloc(1);
 	EXPECT_EQ(table[1]._name, "temp0");
 }
 
 TEST(alloc, two_alloc) {
 	SymbolTable table = SymbolTable();
-	auto t = table.alloc();
-	auto t1 = table.alloc();
+	auto t = table.alloc(1);
+	auto t1 = table.alloc(1);
 	EXPECT_EQ(table[0]._name, "temp0");
 	EXPECT_EQ(table[1]._name, "temp1");
 }
 
 TEST(alloc, alloc_after_symb_and_alloc) {
 	SymbolTable table = SymbolTable();
-	auto t = table.alloc();
-	auto a = table.add("a");
-	auto t1 = table.alloc();
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto t = table.alloc(1);
+	auto a = table.addVar("a", 1, type, 0);
+	auto t1 = table.alloc(1);
 	EXPECT_EQ(table[2]._name, "temp1");
 }
 
@@ -1969,42 +2004,48 @@ TEST(integrat_grammar_tests, fifth) {
 TEST(symboltable, one_a) {
 	SymbolTable table = SymbolTable();
 	std::ostringstream os;
-	auto a = table.add("a");
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto a = table.addVar("a", 1, type, 0);
 	table.print(os);
 	std::ostringstream os2;
-	os2 << "code\tname\tkind\ttype\tlen\tinit\tscope\toffset\n0\ta\tunknown\tunknown\t-1\t0\t-1\t-1\n";
+	os2 << "code\tname\tkind\ttype\tlen\tinit\tscope\toffset\n0\ta\tvar\tchar\t-1\t0\t1\t-1\n";
 	EXPECT_EQ(os.str(), os2.str());
 }
 
 TEST(symboltable, two_a_int) {
 	SymbolTable table = SymbolTable();
 	std::ostringstream os;
-	auto a = table.add("a");
-	auto b = table.add("8");
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	TableRecord::RecordType type2 = TableRecord::RecordType::integer;
+	auto a = table.addVar("a", 1, type, 0);
+	auto b = table.addVar("8", 1, type2, 8);
 	table.print(os);
 	std::ostringstream os2;
-	os2 << "code\tname\tkind\ttype\tlen\tinit\tscope\toffset\n0\ta\tunknown\tunknown\t-1\t0\t-1\t-1\n1\t8\tunknown\tunknown\t-1\t0\t-1\t-1\n";
+	os2 << "code\tname\tkind\ttype\tlen\tinit\tscope\toffset\n0\ta\tvar\tchar\t-1\t0\t1\t-1\n1\t8\tvar\tint\t-1\t8\t1\t-1\n";
 	EXPECT_EQ(os.str(), os2.str());
 }
 
 TEST(call_atom, call) {
 	SymbolTable table = SymbolTable();
-	auto f = table.add("func1");
-	auto result = table.add("res");
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto f = table.addVar("func1", 1, type, 0);
+	auto result = table.addVar("res", 1, type, 0);
 	CallAtom atom = CallAtom(f, result);
 	EXPECT_EQ(atom.toString(), "(CALL, 0,, 1)");
 }
 
 TEST(ret_atom, ret) {
 	SymbolTable table = SymbolTable();
-	auto result = table.add("res");
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto result = table.addVar("res", 1, type, 0);
 	RetAtom atom = RetAtom(result);
 	EXPECT_EQ(atom.toString(), "(RET,,, 0)");
 }
 
 TEST(param_atom, param) {
 	SymbolTable table = SymbolTable();
-	auto param = table.add("p");
+	TableRecord::RecordType type = TableRecord::RecordType::chr;
+	auto param = table.addVar("p", 1, type, 0);
 	ParamAtom atom = ParamAtom(param);
 	EXPECT_EQ(atom.toString(), "(PARAM,,, 0)");
 }
