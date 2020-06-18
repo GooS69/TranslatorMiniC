@@ -1,10 +1,8 @@
-
 int main(){
-int a = 0;
-if ( a < 10 ) {
-	a = 10;
-} 
-else{
-	a = 5;
-}
+	int a;
+	a = 3;
+	switch(a){
+	default:
+	a = a + 5;
+	}
 }
