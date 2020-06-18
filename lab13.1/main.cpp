@@ -14,6 +14,8 @@ int main()
 		t.printAtoms(ofile);
 		ofile << std::endl<<"Symbol Table"<<std::endl;
 		t.printSymbolTable(ofile);
+		ofile << std::endl << "String Table" << std::endl;
+		t.printStringTable(ofile);
 	}
 	catch(TranslationException exception){
 		std::cout << exception.what();

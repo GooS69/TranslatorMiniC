@@ -79,6 +79,7 @@ public:
 	void getNextLexem();
 	void printAtoms(std::ostream& stream);
 	void printSymbolTable(std::ostream& stream);
+	void printStringTable(std::ostream& stream);
 	void generateAtom(Scope scope,std::shared_ptr<Atom> atom);
 	std::shared_ptr<LabelOperand> newLabel();
 	void syntaxError(const std::string& message);

@@ -35,7 +35,7 @@ StringOperand::StringOperand(int index, const StringTable* stringTable) {
 
 
 std::string StringOperand::toString() const {
-	return std::to_string(_index);
+	return "S" + std::to_string(_index);
 }
 
 

@@ -19,19 +19,15 @@ Translator::Translator(std::istream& is) :_scanner(Scanner(is)){
 
 void Translator::startTranslate() {
 	StmtList(GlobalScope);
-	//if (_currentLexem.type() != LexemType::eof) {
-	//	syntaxError("expected operation(there are still tokens)");
-	//}
 	printAtoms(std::cout);
 	std::cout << std::endl << "Symbol table" << std::endl;
 	_symbolTable.print(std::cout);
+	std::cout << std::endl << "String table" << std::endl;
+	_stringTable.print(std::cout);
 }
 
 void Translator::startTranslate_withoutTable() {
 	StmtList(GlobalScope);
-	//if (_currentLexem.type() != LexemType::eof) {
-	//	syntaxError("expected operation(there are still tokens)");
-	//}
 }
 
 void Translator::getNextLexem() {
@@ -45,7 +41,6 @@ void Translator::getNextLexem() {
 			lexicalError(_currentLexem.str());
 		}
 		_tokens.push_back(_currentLexem);
-		std::cout << "*" << _currentLexem.toString() << "*";
 	}
 }
 
@@ -65,6 +60,10 @@ void Translator::printSymbolTable(std::ostream& stream) {
 	_symbolTable.print(stream);
 }
 
+
+void Translator::printStringTable(std::ostream& stream) {
+	_stringTable.print(stream);
+}
 
 void Translator::generateAtom(Scope scope, std::shared_ptr<Atom> atom) {
 	_atoms.emplace(scope, std::vector<std::shared_ptr<Atom>>{});
@@ -93,7 +92,6 @@ void Translator::lexicalError(const std::string& message) {
 
 
 std::shared_ptr<RValue> Translator::E(Scope scope) {								// Правило 1.1
-	std::cout << "E";
 	auto q = E7(scope);
 	if (!q) {
 		syntaxError("E7 at E return nullptr");
@@ -103,7 +101,6 @@ std::shared_ptr<RValue> Translator::E(Scope scope) {								// Правило 1.1
 
 
 std::shared_ptr<RValue> Translator::E7(Scope scope) {								// Правило 2.1
-	//std::cout << "E7";
 	auto q = E6(scope);
 	if (!q) {
 		syntaxError("E6 at E7 return nullptr");
@@ -118,7 +115,6 @@ std::shared_ptr<RValue> Translator::E7(Scope scope) {								// Правило 2.1
 
 
 std::shared_ptr<RValue> Translator::E7_(Scope scope, std::shared_ptr<RValue> p) {
-	//std::cout << "E7_";
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::opor) {						// Правило 3.1
 		auto r = E6(scope);
@@ -144,7 +140,6 @@ std::shared_ptr<RValue> Translator::E7_(Scope scope, std::shared_ptr<RValue> p) 
 
 
 std::shared_ptr<RValue> Translator::E6(Scope scope) {								// Правило 5.1
-	//std::cout << "E6";
 	auto q = E5(scope);
 	if (!q) {
 		syntaxError("E5 at E6 return nullptr");
@@ -158,7 +153,6 @@ std::shared_ptr<RValue> Translator::E6(Scope scope) {								// Правило 5.1
 
 
 std::shared_ptr<RValue> Translator::E6_(Scope scope, std::shared_ptr<RValue> p) {
-	//std::cout << "E6_";
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::opand) {						// Правило 6.1
 		auto r = E5(scope);
@@ -184,7 +178,6 @@ std::shared_ptr<RValue> Translator::E6_(Scope scope, std::shared_ptr<RValue> p) 
 
 
 std::shared_ptr<RValue> Translator::E5(Scope scope) {								// Правило 8.1
-	//std::cout << "E5";
 	auto q = E4(scope);
 	if (!q) {
 		syntaxError("E4 at E5 return nullptr");
@@ -198,7 +191,6 @@ std::shared_ptr<RValue> Translator::E5(Scope scope) {								// Правило 8.1
 
 
 std::shared_ptr<RValue> Translator::E5_(Scope scope, std::shared_ptr<RValue> p) {
-	//std::cout << "E5_";
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::opeq) {						// Правило 9.1
 		auto r = E4(scope);
@@ -301,7 +293,6 @@ std::shared_ptr<RValue> Translator::E5_(Scope scope, std::shared_ptr<RValue> p) 
 
 
 std::shared_ptr<RValue> Translator::E4(Scope scope) {								// Правило 15.1
-	//std::cout << "E4";
 	auto q = E3(scope);
 	if (!q) {
 		syntaxError("E3 at E4 return nullptr");
@@ -315,7 +306,6 @@ std::shared_ptr<RValue> Translator::E4(Scope scope) {								// Правило 15.1
 
 
 std::shared_ptr<RValue> Translator::E4_(Scope scope, std::shared_ptr<RValue> p) {
-	//std::cout << "E4_"<<"("<<_currentLexem.toString()<<")";
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::opplus) {					// Правило 16.1
 		auto r = E3(scope);
@@ -355,7 +345,6 @@ std::shared_ptr<RValue> Translator::E4_(Scope scope, std::shared_ptr<RValue> p) 
 
 
 std::shared_ptr<RValue> Translator::E3(Scope scope) {								// Правило 19.1
-	//std::cout << "E3";
 	auto q = E2(scope);
 	if (!q) {
 		syntaxError("E2 at E3 return nullptr");
@@ -369,7 +358,6 @@ std::shared_ptr<RValue> Translator::E3(Scope scope) {								// Правило 19.1
 
 
 std::shared_ptr<RValue> Translator::E3_(Scope scope, std::shared_ptr<RValue> p) {
-	//std::cout << "E3_";
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::opmult) {					// Правило 20.1
 		auto r = E2(scope);
@@ -395,7 +383,6 @@ std::shared_ptr<RValue> Translator::E3_(Scope scope, std::shared_ptr<RValue> p) 
 
 
 std::shared_ptr<RValue> Translator::E2(Scope scope) {
-	//std::cout << "E2";
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::opnot) {						// Правило 22.1
 		auto q = E1(scope);
@@ -421,7 +408,6 @@ std::shared_ptr<RValue> Translator::E2(Scope scope) {
 
 
 std::shared_ptr<RValue> Translator::E1(Scope scope) {
-	//std::cout << "E1";
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::lpar) {						//Правило 24.1
 		auto q = E(scope);
@@ -466,7 +452,6 @@ std::shared_ptr<RValue> Translator::E1(Scope scope) {
 
 
 std::shared_ptr<RValue> Translator::E1_(Scope scope, std::string p) {				// Правило 29.1
-	//std::cout << "E1_";
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::opinc) {
 		auto s = _symbolTable.checkVar(scope, p);
@@ -508,7 +493,6 @@ std::shared_ptr<RValue> Translator::E1_(Scope scope, std::string p) {				// Прав
 
 
 int Translator::ArgList(Scope scope) {
-	std::cout << "Arglist ";
 	getNextLexem();
 	_epsilonFlag = true;												// Правило 32.1
 	if (_currentLexem.type() == LexemType::opnot || _currentLexem.type() == LexemType::lpar || _currentLexem.type() == LexemType::num
@@ -526,7 +510,6 @@ int Translator::ArgList(Scope scope) {
 
 
 int Translator::ArgList_(Scope scope) {
-	std::cout << "Arglist_ ";
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::comma) {						// Правило 34.1
 		auto p = E(scope);
@@ -546,7 +529,6 @@ int Translator::ArgList_(Scope scope) {
 
 
 void Translator::DeclareStmt(Scope scope) {								// Правило 1.2
-	std::cout << "DeclareStmt " ;
 	TableRecord::RecordType p = Type(scope);
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::id) {
@@ -562,7 +544,6 @@ void Translator::DeclareStmt(Scope scope) {								// Правило 1.2
 
 
 void Translator::DeclareStmt_(Scope scope, TableRecord::RecordType p, std::string q) {
-	std::cout << "DeclareStmt_ " ;
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::lpar) {						// Правило 2.2
 		if (scope > -1) {
@@ -612,7 +593,6 @@ void Translator::DeclareStmt_(Scope scope, TableRecord::RecordType p, std::strin
 
 
 TableRecord::RecordType Translator::Type(Scope scope) {
-	std::cout << "Type " ;
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::kwchar) {					// Правило 5.2
 		return TableRecord::RecordType::chr;
@@ -626,7 +606,6 @@ TableRecord::RecordType Translator::Type(Scope scope) {
 
 
 void Translator::DeclVarList_(Scope scope, TableRecord::RecordType p) {
-	std::cout << "DeclVarList_ " ;
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::comma) {						// Правило 7.2
 		getNextLexem();
@@ -643,7 +622,6 @@ void Translator::DeclVarList_(Scope scope, TableRecord::RecordType p) {
 
 
 void Translator::InitVar(Scope scope, TableRecord::RecordType p, std::string q) {
-	std::cout << "InitVar " ;
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::opassign) {					// Правило 9.2
 		getNextLexem();
@@ -660,7 +638,6 @@ void Translator::InitVar(Scope scope, TableRecord::RecordType p, std::string q) 
 
 
 int Translator::ParamList(Scope scope) {
-	std::cout << "ParamList " ;
 	getNextLexem();
 	_epsilonFlag = true;
 	if (_currentLexem.type() == LexemType::kwchar || _currentLexem.type() == LexemType::kwint) {	// Правило 11.2
@@ -678,7 +655,6 @@ int Translator::ParamList(Scope scope) {
 
 
 int Translator::ParamList_(Scope scope) {
-	std::cout << "ParamList_ " ;
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::comma) {							// Правило 13.2
 		TableRecord::RecordType q = Type(scope);
@@ -696,7 +672,6 @@ int Translator::ParamList_(Scope scope) {
 
 
 void Translator::StmtList(Scope scope) {
-	std::cout << "StmtList ";
 	getNextLexem();
 	_epsilonFlag = true;
 	if (_currentLexem.type() == LexemType::kwchar || _currentLexem.type() == LexemType::kwint ||
@@ -714,7 +689,6 @@ void Translator::StmtList(Scope scope) {
 
 
 void Translator::Stmt(Scope scope) {
-	std::cout << "Stmt " ;
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::kwchar || _currentLexem.type() == LexemType::kwint){	
 		_epsilonFlag = true;												// Правило 17.2
@@ -793,7 +767,6 @@ void Translator::Stmt(Scope scope) {
 
 
 void Translator::AssignOrCallOp(Scope scope) {								// Правило 28.2
-	std::cout << "AssignOrCallOp " ;
 	AssignOrCall(scope);
 	getNextLexem();
 	if (_currentLexem.type() != LexemType::semicolon) {
@@ -804,7 +777,6 @@ void Translator::AssignOrCallOp(Scope scope) {								// Правило 28.2
 
 
 void Translator::AssignOrCall(Scope scope) {								// Правило 29.2
-	std::cout << "AssignOrCall " ;
 	getNextLexem();
 	if (_currentLexem.type() != LexemType::id) {
 		syntaxError("expected id at AssignOrCall");
@@ -815,7 +787,6 @@ void Translator::AssignOrCall(Scope scope) {								// Правило 29.2
 
 
 void Translator::AssignOrCall_(Scope scope, std::string p) {
-	std::cout << "AssignOrCall_ ";
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::opassign) {						// Правило 30.2
 		auto r = _symbolTable.checkVar(scope, p);
@@ -840,7 +811,6 @@ void Translator::AssignOrCall_(Scope scope, std::string p) {
 
 
 void Translator::WhileOp(Scope scope) {										// Правило 32.2
-	std::cout << "WhileOp ";
 	getNextLexem();
 	if (_currentLexem.type() != LexemType::kwwhile) {
 		syntaxError("expected while at WhileOp");
@@ -866,7 +836,6 @@ void Translator::WhileOp(Scope scope) {										// Правило 32.2
 
 
 void Translator::ForOp(Scope scope) {											// Правило 33.2
-	std::cout << "ForOp ";
 	getNextLexem();
 	if (_currentLexem.type() != LexemType::kwfor) {
 		syntaxError("expected for at ForOp");
@@ -904,7 +873,6 @@ void Translator::ForOp(Scope scope) {											// Правило 33.2
 
 
 void Translator::ForInit(Scope scope) {
-	std::cout << "ForInit ";
 	getNextLexem();
 	_epsilonFlag = true;
 	if (_currentLexem.type() == LexemType::id) {									// Правило 34.2
@@ -916,7 +884,6 @@ void Translator::ForInit(Scope scope) {
 
 
 std::shared_ptr<RValue> Translator::ForExp(Scope scope) {
-	std::cout << "ForExp ";
 	getNextLexem();
 	_epsilonFlag = true;
 	if (_currentLexem.type() == LexemType::opnot || _currentLexem.type() == LexemType::lpar || _currentLexem.type() == LexemType::num
@@ -929,7 +896,6 @@ std::shared_ptr<RValue> Translator::ForExp(Scope scope) {
 
 
 void Translator::ForLoop(Scope scope) {
-	std::cout << "ForLoop ";
 	getNextLexem();
 	if (_currentLexem.type() == LexemType::id) {									// Правило 38.2
 		_epsilonFlag = true;
@@ -951,7 +917,6 @@ void Translator::ForLoop(Scope scope) {
 
 
 void Translator::IfOp(Scope scope) {												// Правило 41.2
-	std::cout << "IfOp ";
 	getNextLexem();
 	if (_currentLexem.type() != LexemType::kwif) {
 		syntaxError("expected if at IfOp");
@@ -978,11 +943,8 @@ void Translator::IfOp(Scope scope) {												// Правило 41.2
 
 
 void Translator::ElsePart(Scope scope) {
-	std::cout << "ElsePart ";
 	getNextLexem();
-	std::cout << "?????????????";
 	if (_currentLexem.type() == LexemType::kwelse) {									// Правило 42.2
-		std::cout << "?????????????";
 		Stmt(scope);
 		return;
 	}
@@ -1097,8 +1059,7 @@ std::shared_ptr<LabelOperand> Translator::ACase(Scope scope, std::shared_ptr<RVa
 }
 
 
-void Translator::IOp(Scope scope) {	
-	std::cout << "IOp ";																	// Правило 50.2
+void Translator::IOp(Scope scope) {																		// Правило 50.2
 	getNextLexem();
 	if (_currentLexem.type() != LexemType::kwin) {
 		syntaxError("expected in at IOp");
@@ -1118,8 +1079,7 @@ void Translator::IOp(Scope scope) {
 }
 
 
-void Translator::OOp(Scope scope) {	
-	std::cout << "OOp ";																// Правило 51.2
+void Translator::OOp(Scope scope) {																	// Правило 51.2
 	getNextLexem();
 	if (_currentLexem.type() != LexemType::kwout) {
 		syntaxError("expected out at OOp");
@@ -1134,7 +1094,6 @@ void Translator::OOp(Scope scope) {
 
 
 void Translator::OOp_(Scope scope) {
-	std::cout << "OOp_ ";
 	getNextLexem();																		// Правило 52.2
 	if (_currentLexem.type() == LexemType::opnot || _currentLexem.type() == LexemType::lpar || _currentLexem.type() == LexemType::num
 		|| _currentLexem.type() == LexemType::chr || _currentLexem.type() == LexemType::opinc || _currentLexem.type() == LexemType::id) {

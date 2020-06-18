@@ -31,3 +31,10 @@ std::ostream& operator<<(std::ostream& os, StringTable& table) {
 	}
 	return os;
 }
+
+void StringTable::print(std::ostream& stream) {
+	stream << "code\t" << "string\t" << std::endl;
+	for (int i = 0; i < _strings.size(); i++) {
+		stream << i << "\t" << _strings[i] << std::endl;
+	}
+}

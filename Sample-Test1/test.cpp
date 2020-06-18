@@ -19,7 +19,7 @@
 TEST(add_stringtab, one_elem) {
 	StringTable table = StringTable();
 	std::string str = "Hello";
-	EXPECT_EQ(table.add(str)->toString(), "0");
+	EXPECT_EQ(table.add(str)->toString(), "S0");
 	EXPECT_EQ(table[0], "Hello");
 }
 
@@ -27,8 +27,8 @@ TEST(add_stringtab, two_elem) {
 	StringTable table = StringTable();
 	std::string str = "Hello";
 	std::string str2 = "HelloWorld";
-	EXPECT_EQ(table.add(str)->toString(), "0");
-	EXPECT_EQ(table.add(str2)->toString(), "1");
+	EXPECT_EQ(table.add(str)->toString(), "S0");
+	EXPECT_EQ(table.add(str2)->toString(), "S1");
 	EXPECT_EQ(table[0], "Hello");
 	EXPECT_EQ(table[1], "HelloWorld");
 }
@@ -40,15 +40,15 @@ TEST(add_stringtab, five_elem) {
 	std::string str3 = "HelloSpace";
 	std::string str4 = "OutSpace";
 	std::string str5 = "Goodbye";
-	EXPECT_EQ(table.add(str)->toString(), "0");
+	EXPECT_EQ(table.add(str)->toString(), "S0");
 	EXPECT_EQ(table[0], "Hello");
-	EXPECT_EQ(table.add(str2)->toString(), "1");
+	EXPECT_EQ(table.add(str2)->toString(), "S1");
 	EXPECT_EQ(table[1], "HelloWorld");
-	EXPECT_EQ(table.add(str3)->toString(), "2");
+	EXPECT_EQ(table.add(str3)->toString(), "S2");
 	EXPECT_EQ(table[2], "HelloSpace");
-	EXPECT_EQ(table.add(str4)->toString(), "3");
+	EXPECT_EQ(table.add(str4)->toString(), "S3");
 	EXPECT_EQ(table[3], "OutSpace");
-	EXPECT_EQ(table.add(str5)->toString(), "4");
+	EXPECT_EQ(table.add(str5)->toString(), "S4");
 	EXPECT_EQ(table[4], "Goodbye");
 }
 TEST(add_stringtab, existing_elem_on_pos1) {
@@ -60,7 +60,7 @@ TEST(add_stringtab, existing_elem_on_pos1) {
 	table.add(str);
 	table.add(str2);
 	table.add(str3);
-	EXPECT_EQ(table.add(str4)->toString(), "1");
+	EXPECT_EQ(table.add(str4)->toString(), "S1");
 	EXPECT_EQ(table[1], "Hello2");
 }
 
@@ -73,7 +73,7 @@ TEST(add_stringtab, existing_elem_on_firstpos) {
 	table.add(str);
 	table.add(str2);
 	table.add(str3);
-	EXPECT_EQ(table.add(str4)->toString(), "0");
+	EXPECT_EQ(table.add(str4)->toString(), "S0");
 	EXPECT_EQ(table[0], "Hello");
 }
 
@@ -86,7 +86,7 @@ TEST(add_stringtab, existing_elem_on_lastpos) {
 	table.add(str);
 	table.add(str2);
 	table.add(str3);
-	EXPECT_EQ(table.add(str4)->toString(), "2");
+	EXPECT_EQ(table.add(str4)->toString(), "S2");
 	EXPECT_EQ(table[2], "Hello3");
 }
 
@@ -1985,7 +1985,7 @@ TEST(integrat_grammar_tests, in) {
 	}
 }
 
-TEST(integrat_grammar_tests, out) {
+TEST(integrat_grammar_tests, out_int) {
 	std::istringstream s_in("int main(){int a = 10;\nout a;}");
 	std::ostringstream s_out;
 	std::ostringstream s_out2;
@@ -2001,6 +2001,21 @@ TEST(integrat_grammar_tests, out) {
 	}
 }
 
+TEST(integrat_grammar_tests, out_str) {
+	std::istringstream s_in("int main(){int a = 10;\nout \"Hello\";}");
+	std::ostringstream s_out;
+	std::ostringstream s_out2;
+	Translator t = Translator(s_in);
+	try {
+		t.startTranslate_withoutTable();
+		t.printAtoms(s_out);
+		EXPECT_EQ(s_out.str(), "0 (OUT,,, S0)\n0 (RET,,, '0')\n");
+	}
+	catch (TranslationException exception) {
+		s_out2 << exception.what();
+		EXPECT_EQ(s_out2.str(), "");
+	}
+}
 TEST(integrat_grammar_tests, IF_1_else_2) {
 	std::istringstream s_in("int main(){int a = 10;\nint b=0;if(a>5){b=1;}\nelse{b=2;}}");
 	std::ostringstream s_out;
@@ -2033,6 +2048,21 @@ TEST(integrat_grammar_tests, if_1_ELSE_2) {
 	}
 }
 
+TEST(integrat_grammar_tests, switch_case1) {
+	std::istringstream s_in("int main(){int a = 3;\nswitch(a){\ncase 1:\na=a+2;\ndefault:\na=a+5;}}");
+	std::ostringstream s_out;
+	std::ostringstream s_out2;
+	Translator t = Translator(s_in);
+	try {
+		t.startTranslate_withoutTable();
+		t.printAtoms(s_out);
+		EXPECT_EQ(s_out.str(), "0 (NE, 1, '1', 1)\n0 (ADD, 1, '2', 2)\n0 (MOV, 2,, 1)\n0 (LBL,,, 0)\n0 (LBL,,, 1)\n0 (JMP,,, 2)\n0 (LBL,,, 3)\n0 (ADD, 1, '5', 3)\n0 (MOV, 3,, 1)\n0 (JMP,,, 0)\n0 (LBL,,, 2)\n0 (JMP,,, 3)\n0 (LBL,,, 0)\n0 (RET,,, '0')\n");
+	}
+	catch (TranslationException exception) {
+		s_out2 << exception.what();
+		EXPECT_EQ(s_out2.str(), "");
+	}
+}
 TEST(symboltable, one_a) {
 	SymbolTable table = SymbolTable();
 	std::ostringstream os;

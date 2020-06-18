@@ -13,5 +13,5 @@ public:
 	const std::string& operator [](const int index) const;
 	std::shared_ptr<StringOperand> add(const std::string name);
 	friend std::ostream& operator<<(std::ostream& os, StringTable& table);
-
+	void print(std::ostream& stream);
 };
